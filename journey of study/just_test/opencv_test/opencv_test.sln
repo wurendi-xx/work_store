@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opencv_test", "opencv_test\opencv_test.vcxproj", "{2D6135E6-3B54-44D9-9121-AC93AC21A126}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "meanshift-object_detection", "meanshift-object_detection\meanshift-object_detection.vcxproj", "{F2D87C89-B607-4DAB-BCF6-C469A484A583}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2D6135E6-3B54-44D9-9121-AC93AC21A126} = {2D6135E6-3B54-44D9-9121-AC93AC21A126}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2D6135E6-3B54-44D9-9121-AC93AC21A126}.Debug|x64.ActiveCfg = Debug|x64
+		{2D6135E6-3B54-44D9-9121-AC93AC21A126}.Debug|x64.Build.0 = Debug|x64
+		{2D6135E6-3B54-44D9-9121-AC93AC21A126}.Debug|x86.ActiveCfg = Debug|Win32
+		{2D6135E6-3B54-44D9-9121-AC93AC21A126}.Debug|x86.Build.0 = Debug|Win32
+		{2D6135E6-3B54-44D9-9121-AC93AC21A126}.Release|x64.ActiveCfg = Release|x64
+		{2D6135E6-3B54-44D9-9121-AC93AC21A126}.Release|x64.Build.0 = Release|x64
+		{2D6135E6-3B54-44D9-9121-AC93AC21A126}.Release|x86.ActiveCfg = Release|Win32
+		{2D6135E6-3B54-44D9-9121-AC93AC21A126}.Release|x86.Build.0 = Release|Win32
+		{F2D87C89-B607-4DAB-BCF6-C469A484A583}.Debug|x64.ActiveCfg = Debug|x64
+		{F2D87C89-B607-4DAB-BCF6-C469A484A583}.Debug|x64.Build.0 = Debug|x64
+		{F2D87C89-B607-4DAB-BCF6-C469A484A583}.Debug|x86.ActiveCfg = Debug|Win32
+		{F2D87C89-B607-4DAB-BCF6-C469A484A583}.Debug|x86.Build.0 = Debug|Win32
+		{F2D87C89-B607-4DAB-BCF6-C469A484A583}.Release|x64.ActiveCfg = Release|x64
+		{F2D87C89-B607-4DAB-BCF6-C469A484A583}.Release|x64.Build.0 = Release|x64
+		{F2D87C89-B607-4DAB-BCF6-C469A484A583}.Release|x86.ActiveCfg = Release|Win32
+		{F2D87C89-B607-4DAB-BCF6-C469A484A583}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0550BB83-7C05-4E98-9833-4010E3D4E99A}
+	EndGlobalSection
+EndGlobal

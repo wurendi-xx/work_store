@@ -1,0 +1,58 @@
+@startuml
+
+class SeasoningInformation_t{
+    uint8_t Name[20];//输入
+    uint32_t Weight;//输入
+}
+
+class Seasoning_t{
+    uint32_t SeasoningNum;//输入
+    SeasoningInformation_t SeasoningInf[5];//输入
+}
+
+class Running_Step_t{
+    uint32_t State; //下拉
+    uint32_t Cover;//下拉
+    uint32_t Stir;//下拉
+    uint32_t Power;//下拉
+    uint32_t Time;//输入
+    uint32_t Temperature;//输入
+    uint8_t  Txt[40];//输入
+}
+
+class Menu1_t{
+    uint8_t                 DishName[20];//输入
+    uint32_t                AllTime;//输入
+    uint32_t                SeasoningStepNum;//下拉
+    uint32_t                RunStepNum;//下拉
+    Seasoning_t             Seasoning[5];//5
+    uint8_t                 MainSeasoning[20];//6
+    Running_Step_t			RunStep[36];//7 下拉    
+}
+
+class Run_State_t{
+    Preparation          = 0x00,//
+    CoverControl         = 0x01,//
+    Heating    	 	 	 = 0x02,//
+    Feeding     	 	 = 0x03,//
+    Cleaning     	 	 = 0x04,//
+    Waitting     	 	 = 0x05,//
+    PowerOn     	 	 = 0x06,//
+    NetCheck     	 	 = 0x07,//
+    ModeSet     	 	 = 0x08,
+    MenuSelect     	 	 = 0x09,
+    Suspend      	 	 = 0x0A,
+    Testing      	 	 = 0x0B,
+    SeasonList			 = 0x0C,
+    CheckPreparation     = 0x0D,
+    FixedModeSelect      = 0x0E,
+    FixedModeWork        = 0x0F,    
+}
+
+
+SeasoningInformation_t --* Seasoning_t
+Seasoning_t --* Menu1_t
+Running_Step_t --* Menu1_t
+Run_State_t ..* Running_Step_t
+
+@enduml

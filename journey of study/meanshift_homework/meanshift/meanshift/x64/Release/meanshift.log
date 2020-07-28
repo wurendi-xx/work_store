@@ -1,0 +1,10 @@
+﻿  源.cpp
+源.cpp(51): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+源.cpp(71): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+  正在生成代码
+  5 of 131 functions ( 3.8%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  已完成代码的生成
+  meanshift.vcxproj -> G:\gitTUT\journey of study\meanshift_homework\meanshift\x64\Release\meanshift.exe
+  meanshift.vcxproj -> G:\gitTUT\journey of study\meanshift_homework\meanshift\x64\Release\meanshift.pdb (Full PDB)
