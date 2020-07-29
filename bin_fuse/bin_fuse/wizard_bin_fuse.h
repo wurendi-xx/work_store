@@ -3,6 +3,7 @@
 
 #include <QWizard>
 #include <QProgressDialog>
+#include <QMessageBox>
 #include "ui_form_bin_fuse.h"
 #include "form_bin_fuse.h"
 

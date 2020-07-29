@@ -4,7 +4,7 @@
 #define MENU_ADD 300
 #define PIC_8K_ADD 1100
 #define PIC_28K_ADD 2500
-#define PIC_60K_ADD 3100
+#define PIC_60K_ADD 3700
 #define PIC_120K_ADD 5120
 #define FONT_16_ADD 6020
 #define FONT_32_ADD 9620
@@ -185,13 +185,18 @@ bool Wizard_bin_fuse::bin_write(QDataStream &out,QStringList &input_file_list,QP
         }
         else
         {
+            QMessageBox::critical(this,tr("错误"),tr("文件大小存在溢出，请检查！"),tr("返回"));
             return false;
         }
         cur_index += bin_size;
         progressBar->setValue(cur_index);
         file.close();
     }
-
+    if(cur_index > bin_address)
+    {
+        QMessageBox::critical(this,tr("错误"),tr("文件数目存在溢出，请检查！"),tr("返回"));
+        return false;
+    }
     //剩余空间填满
     fill_rest(out,bin_address,cur_index);
     progressBar->setValue(cur_index);
