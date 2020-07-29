@@ -185,7 +185,7 @@ bool Wizard_bin_fuse::bin_write(QDataStream &out,QStringList &input_file_list,QP
         }
         else
         {
-            QMessageBox::critical(this,tr("错误"),tr("文件大小存在溢出，请检查！"),tr("返回"));
+            QMessageBox::critical(this,tr("错误"),str_path+tr("文件大小存在溢出，请检查！"),tr("返回"));
             return false;
         }
         cur_index += bin_size;
