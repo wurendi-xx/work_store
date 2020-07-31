@@ -39,6 +39,8 @@ private:
     Form_bin_fuse* page_pic_120k;
     Form_bin_fuse* page_font;
 
+    QTextStream out_log;
+
     bool bin_fuse();
     void fill_rest(QDataStream &out, int input_add, int &cur_index);
     bool bin_write(QDataStream &out,QStringList &input_file_list,QProgressDialog* progressBar,int bin_size,int bin_address,int &cur_index);

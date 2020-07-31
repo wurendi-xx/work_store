@@ -1,5 +1,16 @@
+/** @file wizard_bin_fuse.cpp
+ * @brief 菜谱制作bin文件的引导界面对象
+ * @author Wu Rendi
+ * @version 0.0.1.0
+ * @date 2020-7-31
+ */
+
 #include "wizard_bin_menu.h"
 
+/**
+ * @brief Wizard_bin_menu::Wizard_bin_menu 初始化引导界面，添加引导页（主要信息、调料信息、状态信息）
+ * @param parent
+ */
 Wizard_bin_menu::Wizard_bin_menu(QWidget *parent):
     QWizard(parent),
     page_main(new QWizardPage_main),
@@ -20,6 +31,10 @@ Wizard_bin_menu::Wizard_bin_menu(QWidget *parent):
 
 }
 
+/**
+ * @brief Wizard_bin_menu::validateCurrentPage 引导界面finish的触发入口
+ * @return
+ */
 bool Wizard_bin_menu::validateCurrentPage()
 {
 
@@ -31,7 +46,10 @@ bool Wizard_bin_menu::validateCurrentPage()
     return true;
 }
 
-
+/**
+ * @brief Wizard_bin_menu::bin_maker 将引导界面的输入控件的值写入bin文件
+ * @return
+ */
 bool Wizard_bin_menu::bin_maker()
 {
 
@@ -49,7 +67,7 @@ bool Wizard_bin_menu::bin_maker()
 
 
     QByteArray tmp;
-    //空常量
+    //空常量,用于配合地址计数器填充空白区域
     char blank0[4];
     memset(blank0,'\0',4*sizeof(char));
     char blank1[20];
@@ -61,15 +79,12 @@ bool Wizard_bin_menu::bin_maker()
     int tmpInt;
 
     //开始写入数据
-
     tmp = field("menu_name").toByteArray();
     out.writeRawData(toGBK(tmp),tmp.size());
     for(int i = 0;i < 20-tmp.size();i++)
     {
         out.writeRawData(blank3,1);
     }
-
-
 
     tmp.clear();
     tmpInt = field("total_time").toInt();
@@ -182,13 +197,17 @@ bool Wizard_bin_menu::bin_maker()
         }
         else
             out.writeRawData(blank2,40);
-
     }
 
     file.close();
     return true;
 }
 
+/**
+ * @brief Wizard_bin_menu::convert_state 将机器的状态映射到具体字节
+ * @param input 枚举类型的输入
+ * @return
+ */
 QByteArray Wizard_bin_menu::convert_state(int input)
 {
     QByteArray result;
@@ -218,7 +237,12 @@ QByteArray Wizard_bin_menu::convert_state(int input)
     return result;
 }
 
-
+/**
+ * @brief Wizard_bin_menu::toGBK 将QString类型的字符串转化为GBK编码的字符串
+ * @note Qt中QString的默认字符编码为Unicode，写入MCU的字符串类型为GBK
+ * @param input QString类型字符串
+ * @return
+ */
 QByteArray Wizard_bin_menu::toGBK(QString input)
 {
     QTextCodec* gbk = QTextCodec::codecForName("gbk");

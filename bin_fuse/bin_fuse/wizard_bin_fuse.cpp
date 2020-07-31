@@ -1,3 +1,9 @@
+/** @file wizard_bin_fuse.cpp
+ * @brief 合成bin文件的引导界面对象
+ * @author Wu Rendi
+ * @version 0.0.1.0
+ * @date 2020-7-31
+ */
 #include "wizard_bin_fuse.h"
 
 //bin文件结束地址
@@ -19,6 +25,10 @@
 #define FONT_32_SIZE 1200
 #define FONT_56_SIZE 3400
 
+/**
+ * @brief Wizard_bin_fuse::Wizard_bin_fuse 初始化引导界面，并且添加需要的引导页（菜单、图片、字库）
+ * @param parent
+ */
 Wizard_bin_fuse::Wizard_bin_fuse(QWidget *parent) :
     QWizard(parent),
     page_menu(new Form_bin_fuse),
@@ -45,7 +55,11 @@ Wizard_bin_fuse::Wizard_bin_fuse(QWidget *parent) :
     setWindowTitle("bin文件融合");
 
 }
-
+/**
+ * @brief Wizard_bin_fuse::validateCurrentPage 引导界面的finish按钮触发入口
+ * @param NONE
+ * @return
+ */
 bool Wizard_bin_fuse::validateCurrentPage()
 {
     //点击finish触发
@@ -56,6 +70,11 @@ bool Wizard_bin_fuse::validateCurrentPage()
 
     return true;
 }
+
+/**
+ * @brief Wizard_bin_fuse::bin_fuse 读取引导界面收集的所有bin文件路径，按照一定的规则整合为一个bin文件
+ * @return
+ */
 
 bool Wizard_bin_fuse::bin_fuse()
 {
@@ -71,6 +90,12 @@ bool Wizard_bin_fuse::bin_fuse()
         fuse_file.open(QIODevice::WriteOnly);
     }
     QDataStream out(&fuse_file);
+
+    //写入文件记录
+    QString log_file_path = "fuse_log.txt";
+    QFile fuse_log_file(log_file_path);
+    fuse_log_file.open(QIODevice::Text | QIODevice::WriteOnly | QIODevice::Truncate);
+    out_log.setDevice(&fuse_log_file);
 
     //读取文件地址
     QStringList menu_file =  page_menu->files;
@@ -137,11 +162,17 @@ bool Wizard_bin_fuse::bin_fuse()
     bin_write(out,font_32_file,progressBar,FONT_32_SIZE,FONT_32_ADD,cur_index);
     bin_write(out,font_56_file,progressBar,FONT_56_SIZE,FONT_56_ADD,cur_index);
 
-
+    fuse_log_file.close();
     fuse_file.close();
     return true;
 }
 
+/**
+ * @brief Wizard_bin_fuse::fill_rest
+ * @param out bin文件输入流
+ * @param input_add 文件结束地址
+ * @param cur_index 当前地址辅助计数器
+ */
 void Wizard_bin_fuse::fill_rest(QDataStream &out,int input_add,int &cur_index)
 {
     int empty_space = input_add - cur_index;
@@ -154,6 +185,17 @@ void Wizard_bin_fuse::fill_rest(QDataStream &out,int input_add,int &cur_index)
     cur_index = input_add;
 }
 
+
+/**
+ * @brief Wizard_bin_fuse::bin_write
+ * @param out bin文件输入流
+ * @param input_file_list 文件名队列
+ * @param progressBar 进度条控件
+ * @param bin_size 写入文件大小
+ * @param bin_address 文件结束地址
+ * @param cur_index 当前地址辅助计数器
+ * @return 是否运行成功
+ */
 bool Wizard_bin_fuse::bin_write(QDataStream &out,QStringList &input_file_list,QProgressDialog *progressBar,int bin_size,int bin_address,int &cur_index)
 {
 
@@ -162,9 +204,12 @@ bool Wizard_bin_fuse::bin_write(QDataStream &out,QStringList &input_file_list,QP
         QString str_path = input_file_list[i];
         QFile file(str_path);
         file.open(QIODevice::ReadOnly);
-        auto file_size = file.size();
+        int file_size = int(file.size());
         QByteArray tmp = file.readAll();
         out.writeRawData(tmp,file_size);
+
+        out_log<<str_path<<"    "<<cur_index<<endl;
+
         int deviation = bin_size*1024 - file_size;
         if(deviation >= 0)
         {

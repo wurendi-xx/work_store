@@ -1,3 +1,10 @@
+/** @file form_bin_menu.cpp
+ * @brief 菜谱bin文件的引导页对象
+ * @note 因为菜谱引导页之间存在耦合，需要实现动态生成控件，所以不能使用UI直接绘制控件
+ * @author Wu Rendi
+ * @version 0.0.1.0
+ * @date 2020-7-31
+ */
 #include "form_bin_menu.h"
 
 form_bin_menu::form_bin_menu()
@@ -6,35 +13,44 @@ form_bin_menu::form_bin_menu()
 }
 
 
-//----------------------QWizardPage_main类的实现
+/**
+ * @brief QWizardPage_main::QWizardPage_main 主要信息的引导页
+ */
 
 QWizardPage_main::QWizardPage_main()
 {
     //主要信息界面布局和控件生成
     QFormLayout* layout = new QFormLayout;
     this->setLayout(layout);
+
     //菜谱名字
     QLineEdit* name = new QLineEdit;
+
     //正则仅仅匹配汉字、数字、字母、下划线(限定9个）
     QRegExp regExp1("[\u4e00-\u9fa5_a-zA-Z0-9]{1,9}");
     name->setValidator(new QRegExpValidator(regExp1,this));
+
     //总时间
     QLineEdit* total_time = new QLineEdit;
+
     //正则仅仅匹配汉字
     QRegExp regExp2("[0-9]{0,9}");
     total_time->setValidator(new QRegExpValidator(regExp2,this));
+
     //调料步骤
     QStringList textList;
     QComboBox* season_step = new QComboBox;
     for(int i = 1; i < 6 ;i++)
         textList<<QString::number(i);
     season_step->addItems(textList);
+
     //状态步骤
     QComboBox* state_step = new QComboBox;
     textList.clear();
     for(int i = 1; i < 37 ;i++)
         textList<<QString::number(i);
     state_step->addItems(textList);
+
     //添加到布局
     layout->addRow("菜谱名字",name);
     layout->addRow("运行总时间",total_time);
@@ -51,25 +67,7 @@ QWizardPage_main::QWizardPage_main()
     registerField("season_steps",season_step);
     registerField("state_steps",state_step);
 }
-/*
-bool QWizardPage_main::validatePage()
-{
-    if(menu_total_time<99999 &&
-            menu_senson_step<20 &&
-            menu_state_step<20)
-    {
 
-        return true;
-    }
-    else
-    {
-        QMessageBox::critical(NULL,"输入参数格式有误","请检查输入参数格式");
-        return false;
-    }
-
-}
-*/
-//------------QWizardPage_seanson类的实现
 
 QWizardPage_season::QWizardPage_season()
 {
@@ -77,6 +75,10 @@ QWizardPage_season::QWizardPage_season()
 
 }
 
+/**
+ * @brief QWizardPage_season::initializePage 调料引导页的刷新入口程序
+ * @note 调用主要信息页中的调料步骤信息来动态生成当前界面的输入控件
+ */
 void QWizardPage_season::initializePage()
 {
     //不知道为何返回的数字少了1，暂时先加1
@@ -95,22 +97,30 @@ void QWizardPage_season::initializePage()
     {
         //新建界面
         hWidget[i] = new QWidget;
-        //新建布局
+
+        //新建FormLayout布局
         layout[i] = new QFormLayout;
+
         //配料个数输入
         QStringList textList;
+        //使用QComboBox制成下拉菜单
         QComboBox* season_step = new QComboBox;
         for(int i = 1; i < 6 ;i++)
             textList<<QString::number(i);
         season_step->addItems(textList);
 
-
         season_count[i] = new QLineEdit;
+        //正则仅仅匹配汉字（1-5）
         QRegExp regExp1("[1-5]");
         season_count[i]->setValidator(new QRegExpValidator(regExp1,this));
+
+        //控件添加到布局
         layout[i]->addRow("配料个数",season_count[i]);
+
+        //将输入控件注册到整个引导界面
         registerField("season_count"+QString::number(i),season_count[i]);
-        //
+
+        //调料的详情和重量输入
         QVector<QLineEdit*> season_detail(5);
         QVector<QLineEdit*> season_weight(5);
         for(int j = 0;j < 5;j++)
@@ -141,7 +151,13 @@ void QWizardPage_season::initializePage()
 
 }
 
-void QWizardPage_state::cleanupPage(){
+
+
+/**
+ * @brief QWizardPage_season::cleanupPage 调料引导页后退键触发的程序入口
+ * @note 用来清除在当前layout中生成的输入控件
+ */
+void QWizardPage_season::cleanupPage(){
     QLayoutItem *child;
     while((child = hLayout->takeAt(0))!=0)
     {
@@ -162,19 +178,26 @@ QWizardPage_state::QWizardPage_state()
 
 }
 
+/**
+ * @brief QWizardPage_state::initializePage 状态引导页的刷新入口程序
+ * @note 调用主要信息页中的状态步骤来动态生成输入控件
+ */
 void QWizardPage_state::initializePage()
 {
-    //不知道为何返回的数字少了1，暂时先加1
+    //这里返回的是comboBox的索引值，起始为0，所以需要+1
     int count = field("state_steps").toInt()+1;
 
+    //水平布局实例化
     hLayout = new QHBoxLayout(this);
+    //tabWidget布局实例化
     QTabWidget* tabWidget;
     tabWidget = new QTabWidget;
     hLayout->addWidget(tabWidget);
 
+    //批量布局和界面
     QVector<QWidget*> hWidget(count);
     QVector<QFormLayout*> layout(count);
-
+    //批量输入控件声明
     QVector<QComboBox*> run_state(count);
     QVector<QComboBox*> run_cover(count);
     QVector<QComboBox*> run_stir(count);
@@ -189,6 +212,7 @@ void QWizardPage_state::initializePage()
     {
         //新建界面
         hWidget[i] = new QWidget;
+
         //新建布局
         layout[i] = new QFormLayout;
 
@@ -203,35 +227,41 @@ void QWizardPage_state::initializePage()
            <<"FixedModeSelect"<<"FixedModeWork";
         run_state[i]->addItems(textList);
         textList.clear();
+
         //锅盖状态
         run_cover[i] = new QComboBox;
         textList<<"CoverReset"<<"CoverOpen"<<"CoverClose"<<"CoverStop";
         run_cover[i]->addItems(textList);
         textList.clear();
+
         //搅拌状态
         run_stir[i] = new QComboBox;
         textList<<"StirReset"<<"StirRun"<<"StirStop";
         run_stir[i]->addItems(textList);
         textList.clear();
+
         //火力力度
         run_power[i] = new QComboBox;
         for(int i = 1; i < 11 ;i++)
             textList<<QString::number(i);
         run_power[i]->addItems(textList);
+
         //运行时间
         run_time[i] = new QLineEdit;
         QRegExp regExp1("[0-9]{0,9}");
         run_time[i]->setValidator(new QRegExpValidator(regExp1,this));
+
         //运行温度
         run_temperature[i] = new QLineEdit;
         QRegExp regExp2("[0-9]{0,9}");
         run_temperature[i]->setValidator(new QRegExpValidator(regExp2,this));
+
         //文字描述
         run_detail[i] = new QLineEdit;
         QRegExp regExp3("[\u4e00-\u9fa5_a-zA-Z0-9]{0,9}");
         run_detail[i]->setValidator(new QRegExpValidator(regExp3,this));
 
-
+        //输入控件添加到布局
         layout[i]->addRow("运行状态",run_state[i]);
         layout[i]->addRow("锅盖状态",run_cover[i]);
         layout[i]->addRow("搅动状态",run_stir[i]);
@@ -239,7 +269,7 @@ void QWizardPage_state::initializePage()
         layout[i]->addRow("运行时间",run_time[i]);
         layout[i]->addRow("运行温度",run_temperature[i]);
         layout[i]->addRow("文字描述",run_detail[i]);
-
+        //输入控件注册到引导页
         registerField("run_state"+QString::number(i),run_state[i]);
         registerField("run_cover"+QString::number(i),run_cover[i]);
         registerField("run_stir"+QString::number(i),run_stir[i]);
@@ -248,8 +278,9 @@ void QWizardPage_state::initializePage()
         registerField("run_temperature"+QString::number(i),run_temperature[i]);
         registerField("run_detail"+QString::number(i),run_detail[i]);
 
+        //局部布局添加到引导页布局
         hWidget[i]->setLayout(layout[i]);
-
+        //输入控件添加到tabWidget布局
         tabWidget->addTab(hWidget[i],QString::number(i+1));
 
     }
@@ -258,9 +289,16 @@ void QWizardPage_state::initializePage()
 
 }
 
-void QWizardPage_season::cleanupPage(){
+
+
+
+/**
+ * @brief QWizardPage_state::cleanupPage 状态引导页后退键触发的程序入口
+ * @note 用来清除在当前layout中生成的输入控件
+ */
+void QWizardPage_state::cleanupPage(){
     QLayoutItem *child;
-    while((child = hLayout->takeAt(0))!=0)
+    while((child = hLayout->takeAt(0))!= 0)
     {
           hLayout->removeWidget(child->widget());
           child->widget()->setParent(0);

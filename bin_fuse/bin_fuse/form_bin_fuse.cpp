@@ -13,6 +13,9 @@ Form_bin_fuse::~Form_bin_fuse()
     delete ui;
 }
 
+/**
+ * @brief Form_bin_fuse::on_pushButton_file_select_clicked 打开多个文件按钮的入口程序
+ */
 void Form_bin_fuse::on_pushButton_file_select_clicked()
 {
     files = QFileDialog::getOpenFileNames(

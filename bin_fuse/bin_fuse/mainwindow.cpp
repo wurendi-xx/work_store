@@ -36,5 +36,11 @@ void MainWindow::on_pushButton_menu_generate_clicked()
 
 void MainWindow::on_action_2_triggered()
 {
-    QMessageBox::about(this,"about","关于QT");
+    QMessageBox::about(this,"bin文件辅助制作","内部使用，没有泛用性");
+}
+
+void MainWindow::on_action_triggered()
+{
+    QString str = "菜谱生成引导界面会在当前目录生成menu.bin文件\nbin文件融合会在当前目录生成bin_fues.bin文件和fuse_log.txt文件";
+    QMessageBox::about(this,"教程",str);
 }

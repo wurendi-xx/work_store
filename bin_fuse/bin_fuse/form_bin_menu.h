@@ -22,6 +22,9 @@ public:
 
 };
 
+/**
+ * @brief The QWizardPage_main class 菜谱制作第一页主要信息的引导页对象
+ */
 class QWizardPage_main : public QWizardPage
 {
 public:
@@ -35,6 +38,9 @@ private:
 //    bool validatePage();
 };
 
+/**
+ * @brief The QWizardPage_season class 菜谱制作第二页调料信息的引导页对象
+ */
 class QWizardPage_season : public QWizardPage
 {
 public:
@@ -44,10 +50,14 @@ public:
 
 
 private:
+    //用于排版tabWidget界面
     QVBoxLayout* hLayout;
 
 };
 
+/**
+ * @brief The QWizardPage_state class 菜谱制作第三页状态信息的引导页对象
+ */
 class QWizardPage_state : public QWizardPage
 {
 public:
@@ -57,6 +67,7 @@ public:
 
 
 private:
+    //用于排版tabWidget界面
     QHBoxLayout* hLayout;
 
 };
