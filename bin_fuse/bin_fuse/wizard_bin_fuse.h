@@ -12,6 +12,9 @@ namespace Ui {
 class QWizard;
 }
 
+/**
+ * @brief The Wizard_bin_fuse class bin文件融合引导功能实现
+ */
 class Wizard_bin_fuse : public QWizard
 {
     Q_OBJECT
@@ -22,12 +25,12 @@ public:
 
     enum
     {
-        Page_Menu,
-        Page_Pic8K,
-        Page_Pic28K,
-        Page_Pic60K,
-        Page_Pic120K,
-        Page_Font,
+        Page_Menu,/**< 菜谱引导页索引*/
+        Page_Pic8K,/**< 8K图片引导页索引*/
+        Page_Pic28K,/**< 28K图片引导页索引*/
+        Page_Pic60K,/**< 60K图片引导页索引*/
+        Page_Pic120K,/**< 120K图片引导页索引*/
+        Page_Font,/**< 字体引导页索引*/
     };
 
 

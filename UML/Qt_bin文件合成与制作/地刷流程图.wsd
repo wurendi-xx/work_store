@@ -1,0 +1,26 @@
+@startuml 地刷流程图
+title 地刷通信流程图
+start
+
+
+if (打开开关) then (保持)
+:上电;
+:启动地刷MCU;
+:主机MCU接收信息;
+    if (地刷类型) then (地板)
+    :地板模式;
+    else (地毯)
+    :地毯模式;
+    endif
+    if (地刷状态) then (正常)
+    :继续上电;
+    else (异常（堵转、短路）)
+    :断电;
+    endif
+else (松开)
+:断电;
+endif
+
+
+stop
+@enduml

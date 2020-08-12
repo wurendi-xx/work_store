@@ -15,6 +15,9 @@
 #include <QTabWidget>
 #include <QVector>
 
+/**
+ * @brief The form_bin_menu class 菜谱制作页的预留类
+ */
 class form_bin_menu : public QWizardPage
 {
 public:
@@ -23,7 +26,7 @@ public:
 };
 
 /**
- * @brief The QWizardPage_main class 菜谱制作第一页主要信息的引导页对象
+ * @brief The QWizardPage_main class 菜谱制作第一页主要信息的引导页界面
  */
 class QWizardPage_main : public QWizardPage
 {
@@ -39,7 +42,7 @@ private:
 };
 
 /**
- * @brief The QWizardPage_season class 菜谱制作第二页调料信息的引导页对象
+ * @brief The QWizardPage_season class 菜谱制作第二页调料信息的引导页界面
  */
 class QWizardPage_season : public QWizardPage
 {
@@ -56,7 +59,7 @@ private:
 };
 
 /**
- * @brief The QWizardPage_state class 菜谱制作第三页状态信息的引导页对象
+ * @brief The QWizardPage_state class 菜谱制作第三页状态信息的引导页界面
  */
 class QWizardPage_state : public QWizardPage
 {

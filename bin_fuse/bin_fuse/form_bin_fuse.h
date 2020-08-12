@@ -9,6 +9,9 @@ namespace Ui {
 class Form_bin_fuse;
 }
 
+/**
+ * @brief The Form_bin_fuse class bin文件融合的引导页界面
+ */
 class Form_bin_fuse : public QWizardPage
 {
     Q_OBJECT

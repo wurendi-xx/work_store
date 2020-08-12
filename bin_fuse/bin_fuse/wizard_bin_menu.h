@@ -13,6 +13,9 @@
 #include <QFile>
 #include <QTextCodec>
 
+/**
+ * @brief The Wizard_bin_menu class 菜谱制作引导功能实现
+ */
 class Wizard_bin_menu : public QWizard
 {
     Q_OBJECT

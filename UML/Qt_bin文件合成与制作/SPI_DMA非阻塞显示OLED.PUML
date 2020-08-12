@@ -1,0 +1,13 @@
+@startuml
+FLASH -> MCU : MCU从flash通过SPI-DMA读取数据放入data_1(阻塞)
+group 同一时间
+FLASH -> MCU : MCU从flash通过SPI-DMA读取数据放入data_2(非阻塞)
+MCU -> FSMC : MCU将flash读取的data_1写给FSMC
+end
+FSMC -> OLED : FSMC将MCU的数据通过8位的并口高速写给OLED
+group 同一时间
+FLASH -> MCU : MCU从flash通过SPI-DMA读取数据放入data_1(非阻塞)
+MCU -> FSMC : MCU将flash读取的data_2写给FSMC
+end
+FSMC -> OLED : FSMC将MCU的数据通过8位的并口高速写给OLED
+@enduml

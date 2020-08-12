@@ -1,3 +1,10 @@
+/** @file form_bin_fuse.cpp
+ * @brief 合成bin文件的引导页对象
+ * @note 使用UI直接绘制控件并调用
+ * @author Wu Rendi
+ * @version 0.0.1.0
+ * @date 2020-7-31
+ */
 #include "form_bin_fuse.h"
 #include "ui_form_bin_fuse.h"
 

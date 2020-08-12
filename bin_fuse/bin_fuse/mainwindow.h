@@ -10,6 +10,9 @@ namespace Ui {
 class MainWindow;
 }
 
+/**
+ * @brief The MainWindow class 主界面对象
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

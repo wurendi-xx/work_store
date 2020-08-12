@@ -1,4 +1,4 @@
-/** @file wizard_bin_fuse.cpp
+/** @file wizard_bin_menu.cpp
  * @brief 菜谱制作bin文件的引导界面对象
  * @author Wu Rendi
  * @version 0.0.1.0
@@ -205,8 +205,8 @@ bool Wizard_bin_menu::bin_maker()
 
 /**
  * @brief Wizard_bin_menu::convert_state 将机器的状态映射到具体字节
- * @param input 枚举类型的输入
- * @return
+ * @param[in] input 枚举类型的输入
+ * @return QByteArray类型的二进制数据
  */
 QByteArray Wizard_bin_menu::convert_state(int input)
 {
