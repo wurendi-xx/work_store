@@ -9,7 +9,54 @@
 
 /**
  * @brief Wizard_bin_menu::Wizard_bin_menu 初始化引导界面，添加引导页（主要信息、调料信息、状态信息）
- * @param parent
+    @startuml 菜谱制作引导页
+    (*) -right> "
+    {{
+    salt
+    {
+    <b>主要信息
+    菜谱名字 | "   "
+    运行时间 | "   "
+    调料步骤 | ^ 1 ^
+    状态步骤 | ^ 1 ^
+    [next] | [cancel]
+    }
+    }}
+    " as first
+
+    first -right> "
+    {{
+    salt
+    {
+    <b>调料信息
+    配料个数 | "   "
+    文字描述 | "   "
+    主料名称 | ^ 1 ^
+    文字描述 | ^ 1 ^
+    [next] | [cancel]
+    }
+    }}
+    " as second
+
+    second -right> "
+    {{
+    salt
+    {
+    <b>状态信息
+    运行状态 | "   "
+    锅盖状态 | "   "
+    搅动状态 | ^ 1 ^
+    火力功率 | ^ 1 ^
+    运行时间 | ^ 1 ^
+    运行温度 | ^ 1 ^
+    文字描述 | ^ 1 ^
+    [next] | [cancel]
+    }
+    }}
+    " as third
+
+    third -right>(*)
+    @enduml
  */
 Wizard_bin_menu::Wizard_bin_menu(QWidget *parent):
     QWizard(parent),

@@ -1,35 +1,127 @@
-@startuml
-class Impl
-interface Interface
 
-Interface <|.. Impl:实现
+@startuml 菜谱制作引导页
+(*) -right> "
+{{
+salt
+{
+<b>主要信息
+菜谱名字 | "   "
+运行时间 | "   "
+调料步骤 | ^ 1 ^
+状态步骤 | ^ 1 ^
+[next] | [cancel]
+}
+}}
+" as first
 
-class Dep1
-class Dep2
-Dep2 <.. Dep1:依赖
+first -right> "
+{{
+salt
+{
+<b>调料信息
+配料个数 | "   "
+文字描述 | "   "
+主料名称 | ^ 1 ^
+文字描述 | ^ 1 ^
+[next] | [cancel]
+}
+}}
+" as second
 
-class Ass1
-class Ass2
-Ass2 <-- Ass1:单向依赖
+second -right> "
+{{
+salt
+{
+<b>状态信息
+运行状态 | "   "
+锅盖状态 | "   "
+搅动状态 | ^ 1 ^
+火力功率 | ^ 1 ^
+运行时间 | ^ 1 ^
+运行温度 | ^ 1 ^
+文字描述 | ^ 1 ^
+[next] | [cancel]
+}
+}}
+" as third
 
-class Ass3
-class Ass4
-Ass4 -- Ass3:双向依赖
+third -right>(*)
 
-class Ass5
-class Ass6
-Ass6 "1..*"<--"0..1" Ass5:多重行依赖
+@enduml
 
-class Agg1
-class Agg2
-Agg2 o-- Agg1:聚合
+@startuml bin文件融合引导页
+(*) -right> "
+{{
+salt
+{
+<b>菜谱bin
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as first
 
-class Com1
-class Com2
-Com2 *-- Com1:组合
+first -right> "
+{{
+salt
+{
+<b>图片8K
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as second
 
-class Parent
-class Sub
-Parent <|-- Sub:继承
+second -right> "
+{{
+salt
+{
+<b>图片28K
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as thrid
+
+thrid -right> "
+{{
+salt
+{
+<b>图片60K
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as fourth
+
+fourth -right> "
+{{
+salt
+{
+<b>图片120K
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as fiveth
+
+fiveth -right> "
+{{
+salt
+{
+<b>字库bin
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as sixth
+
+sixth -right>(*)
 
 @enduml

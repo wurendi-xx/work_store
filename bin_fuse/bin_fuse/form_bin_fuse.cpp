@@ -22,6 +22,7 @@ Form_bin_fuse::~Form_bin_fuse()
 
 /**
  * @brief Form_bin_fuse::on_pushButton_file_select_clicked 打开多个文件按钮的入口程序
+ * 只选择".bin"后缀的文件
  */
 void Form_bin_fuse::on_pushButton_file_select_clicked()
 {

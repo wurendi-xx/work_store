@@ -44,8 +44,17 @@ private:
 
     QTextStream out_log;
 
+    /**
+     * @brief bin_fuse 核心功能，将bin文件批量合成
+     */
     bool bin_fuse();
+    /**
+     * @brief fill_rest 将bin文件中剩余的空间填充置0，避免随机指针内存外的数据写入干扰
+     */
     void fill_rest(QDataStream &out, int input_add, int &cur_index);
+    /**
+     * @brief bin_write 通过列表中的bin文件地址，读取将其写入合成的bin文件
+     */
     bool bin_write(QDataStream &out,QStringList &input_file_list,QProgressDialog* progressBar,int bin_size,int bin_address,int &cur_index);
 
 };

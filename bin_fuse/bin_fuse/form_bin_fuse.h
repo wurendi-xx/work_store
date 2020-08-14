@@ -22,6 +22,9 @@ public:
     QStringList files;
 
 private slots:
+    /**
+     * @brief on_pushButton_file_select_clicked 多文件选择按钮入口函数
+     */
     void on_pushButton_file_select_clicked();
 
 private:

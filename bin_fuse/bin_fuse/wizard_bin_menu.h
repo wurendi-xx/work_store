@@ -36,8 +36,17 @@ private:
     QWizardPage_season* page_season;
     QWizardPage_state* page_state;
 
+    /**
+     * @brief bin_maker核心功能，制作菜谱bin文件
+     */
     bool bin_maker();
+    /**
+     * @brief convert_state 将下拉列表的索引值转化为写入bin的格式
+     */
     QByteArray convert_state(int input);
+    /**
+     * @brief toGBK 将UTF-8编码的字符改为GBK编码，以便MCU读取
+     */
     QByteArray toGBK(QString input);
 
 

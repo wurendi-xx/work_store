@@ -33,10 +33,10 @@ class QWizardPage_main : public QWizardPage
 public:
     QWizardPage_main();
 
-    QString menu_name;
-    int menu_total_time;
-    int menu_senson_step;
-    int menu_state_step;
+    QString menu_name;/**< 记录菜谱名称（unused）*/
+    int menu_total_time;/**< 记录菜谱总用时（unused）*/
+    int menu_senson_step;/**< 记录菜谱用料步骤数（unused）*/
+    int menu_state_step;/**< 记录菜谱状态步骤数（unused）*/
 private:
 //    bool validatePage();
 };
@@ -53,7 +53,7 @@ public:
 
 
 private:
-    //用于排版tabWidget界面
+    /** @brief 用于排版tabWidget界面*/
     QVBoxLayout* hLayout;
 
 };
@@ -70,7 +70,7 @@ public:
 
 
 private:
-    //用于排版tabWidget界面
+    /** @brief 用于排版tabWidget界面*/
     QHBoxLayout* hLayout;
 
 };

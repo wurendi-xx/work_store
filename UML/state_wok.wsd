@@ -1,0 +1,4 @@
+@startuml
+state "上电动画"as PowerOn
+
+@enduml

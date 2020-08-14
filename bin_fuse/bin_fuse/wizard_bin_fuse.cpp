@@ -5,7 +5,11 @@
  * @date 2020-7-31
  */
 #include "wizard_bin_fuse.h"
-
+/**
+ * @defgroup BIN_INFO
+ * @brief bin文件的大小和结束地址
+ * @{
+ */
 //bin文件结束地址
 #define MENU_ADD 300
 #define PIC_8K_ADD 1100
@@ -26,8 +30,87 @@
 #define FONT_56_SIZE 3400
 
 /**
+ *@}
+ */
+
+/**
  * @brief Wizard_bin_fuse::Wizard_bin_fuse 初始化引导界面，并且添加需要的引导页（菜单、图片、字库）
- * @param parent
+    @startuml bin文件融合引导页
+    (*) -right> "
+    {{
+    salt
+    {
+    <b>菜谱bin
+    文件地址
+    [选择所有文件]
+    [next] | [cancel]
+    }
+    }}
+    " as first
+
+    first -right> "
+    {{
+    salt
+    {
+    <b>图片8K
+    文件地址
+    [选择所有文件]
+    [next] | [cancel]
+    }
+    }}
+    " as second
+
+    second -right> "
+    {{
+    salt
+    {
+    <b>图片28K
+    文件地址
+    [选择所有文件]
+    [next] | [cancel]
+    }
+    }}
+    " as thrid
+
+    thrid -right> "
+    {{
+    salt
+    {
+    <b>图片60K
+    文件地址
+    [选择所有文件]
+    [next] | [cancel]
+    }
+    }}
+    " as fourth
+
+    fourth -right> "
+    {{
+    salt
+    {
+    <b>图片120K
+    文件地址
+    [选择所有文件]
+    [next] | [cancel]
+    }
+    }}
+    " as fiveth
+
+    fiveth -right> "
+    {{
+    salt
+    {
+    <b>字库bin
+    文件地址
+    [选择所有文件]
+    [next] | [cancel]
+    }
+    }}
+    " as sixth
+
+    sixth -right>(*)
+
+    @enduml
  */
 Wizard_bin_fuse::Wizard_bin_fuse(QWidget *parent) :
     QWizard(parent),
@@ -58,7 +141,8 @@ Wizard_bin_fuse::Wizard_bin_fuse(QWidget *parent) :
 /**
  * @brief Wizard_bin_fuse::validateCurrentPage 引导界面的finish按钮触发入口
  * @param NONE
- * @return
+ * @return true 运行成功
+ *         false 运行错误
  */
 bool Wizard_bin_fuse::validateCurrentPage()
 {
@@ -73,7 +157,8 @@ bool Wizard_bin_fuse::validateCurrentPage()
 
 /**
  * @brief Wizard_bin_fuse::bin_fuse 读取引导界面收集的所有bin文件路径，按照一定的规则整合为一个bin文件
- * @return
+ * @return true 运行成功
+ *         false 运行错误
  */
 
 bool Wizard_bin_fuse::bin_fuse()
