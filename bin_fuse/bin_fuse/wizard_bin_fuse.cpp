@@ -233,9 +233,9 @@ bool Wizard_bin_fuse::bin_fuse()
     {
        QFileInfo fi = QFileInfo(font_file[i]);
        QString fi_name = fi.fileName();
-       QRegExp regExp1("1616\S*.bin");
-       QRegExp regExp2("3232\S*.bin");
-       QRegExp regExp3("5656\S*.bin");
+       QRegExp regExp1("1616[\\w\\W]*.bin");
+       QRegExp regExp2("3232[\\w\\W]*.bin");
+       QRegExp regExp3("5656[\\w\\W]*.bin");
         if(regExp1.indexIn(fi_name) != -1)
             font_16_file<<font_file[i];
         if(regExp2.indexIn(fi_name) != -1)
@@ -283,6 +283,7 @@ void Wizard_bin_fuse::fill_rest(QDataStream &out,int input_add,int &cur_index)
  */
 bool Wizard_bin_fuse::bin_write(QDataStream &out,QStringList &input_file_list,QProgressDialog *progressBar,int bin_size,int bin_address,int &cur_index)
 {
+    out_log<<"//binSize"<<bin_size<<"K"<<endl;
 
     for(int i = 0;i < input_file_list.size();i++)
     {
@@ -292,8 +293,10 @@ bool Wizard_bin_fuse::bin_write(QDataStream &out,QStringList &input_file_list,QP
         int file_size = int(file.size());
         QByteArray tmp = file.readAll();
         out.writeRawData(tmp,file_size);
-
-        out_log<<str_path<<"    "<<cur_index<<endl;
+        //写入输出文件地址记录
+        QFileInfo fi = QFileInfo(str_path);
+        QString fi_name = fi.fileName();
+        out_log<<"#define "<<fi_name<<" "<<cur_index<<"*1024"<<endl;
 
         int deviation = bin_size*1024 - file_size;
         if(deviation >= 0)
