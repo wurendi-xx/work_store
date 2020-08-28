@@ -125,3 +125,56 @@ salt
 sixth -right>(*)
 
 @enduml
+
+@startuml bin文件融合引导页1
+(*) -down> "
+{{
+salt
+{
+<b>菜谱
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as first
+
+first -down> "
+{{
+salt
+{
+<b>图片
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as second
+
+second -down> "
+{{
+salt
+{
+<b>字库
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as thrid
+
+thrid -down> "
+{{
+salt
+{
+<b>语音
+文件地址
+[选择所有文件]
+[next] | [cancel]
+}
+}}
+" as fourth
+
+fourth -down>(*)
+
+@enduml

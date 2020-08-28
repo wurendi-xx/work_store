@@ -1,0 +1,55 @@
+@startuml
+actor 吴任迪
+actor 柳志康
+actor 许涛
+actor 唐胤
+
+usecase master
+
+
+top to bottom direction
+
+rectangle push{
+    usecase wurendi
+    usecase liuzhikang
+    usecase xutao
+    usecase tangyin
+    吴任迪 -->wurendi : 上传
+    柳志康 -->liuzhikang : 上传
+    许涛 -->xutao : 上传
+    唐胤 -->tangyin : 上传
+}
+note bottom of push : 周一到周四各自编写并上传代码
+
+rectangle merge{
+    usecase develop
+    wurendi-->develop : merge
+    liuzhikang-->develop : merge
+    xutao-->develop : merge
+    tangyin-->develop : merge
+}
+note bottom of merge : 周四下午融合各个分支
+
+develop-->master : update
+note left of master : 将一阶段下已经成熟的代码上传
+
+
+@enduml
+
+@startuml 菜谱映射
+left to right direction
+(heat) -->(加热)
+(heat level) -->(加热功率)
+(open cover) -->(开盖)
+(close cover) -->(关盖)
+(stir) -->(搅拌)
+(stir speed) -->(搅拌速度)
+(...\n...\n...)as tmp1
+(...\n...\n...)as tmp2
+tmp1 -->tmp2
+(Season) -->(添加调料)
+(running time) -->(运行时间)
+(set temperature) -->(设定目标温度)
+(weigh) -->(称重)
+(get temperature) -->(获得温度)
+@enduml

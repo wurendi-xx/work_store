@@ -23,6 +23,14 @@ QWizardPage_main::QWizardPage_main()
     QFormLayout* layout = new QFormLayout;
     this->setLayout(layout);
 
+
+    //菜谱ID
+    QLineEdit* menu_id = new QLineEdit;
+
+    //正则仅仅匹配汉字
+    QRegExp regExp2("[0-9]{0,9}");
+    menu_id->setValidator(new QRegExpValidator(regExp2,this));
+
     //菜谱名字
     QLineEdit* name = new QLineEdit;
 
@@ -34,11 +42,18 @@ QWizardPage_main::QWizardPage_main()
     QLineEdit* total_time = new QLineEdit;
 
     //正则仅仅匹配汉字
-    QRegExp regExp2("[0-9]{0,9}");
+    //QRegExp regExp2("[0-9]{0,9}");
     total_time->setValidator(new QRegExpValidator(regExp2,this));
 
-    //调料步骤
+    //主料种类个数
     QStringList textList;
+    QComboBox* ingredients = new QComboBox;
+    for(int i = 1; i < 11 ;i++)
+        textList<<QString::number(i);
+    ingredients->addItems(textList);
+
+    //调料步骤
+    textList.clear();
     QComboBox* season_step = new QComboBox;
     for(int i = 1; i < 6 ;i++)
         textList<<QString::number(i);
@@ -52,8 +67,10 @@ QWizardPage_main::QWizardPage_main()
     state_step->addItems(textList);
 
     //添加到布局
+    layout->addRow("菜谱ID",menu_id);
     layout->addRow("菜谱名字",name);
     layout->addRow("运行总时间",total_time);
+    layout->addRow("主料种类",ingredients);
     layout->addRow("调料步骤",season_step);
     layout->addRow("状态步骤",state_step);
 
@@ -62,11 +79,77 @@ QWizardPage_main::QWizardPage_main()
     QObject::connect(season_step,&QComboBox::currentTextChanged,this,[=](){menu_senson_step = season_step->currentText().toInt();});
     QObject::connect(state_step,&QComboBox::currentTextChanged,this,[=](){menu_state_step = state_step->currentText().toInt();});
 
+    registerField("menu_id*",menu_id);
     registerField("menu_name*",name);
     registerField("total_time*",total_time);
+    registerField("ingredients",ingredients);
     registerField("season_steps",season_step);
     registerField("state_steps",state_step);
 }
+
+//---------------------------------------------------------------------------------QWizardPage_Ingredients的实现
+
+QWizardPage_ingredients::QWizardPage_ingredients()
+{
+
+
+}
+
+/**
+ * @brief QWizardPage_ingredients::initializePage 主料引导页的刷新入口程序
+ * @note 调用主要信息页中的主料种类信息来动态生成当前界面的输入控件
+ */
+void QWizardPage_ingredients::initializePage()
+{
+    //不知道为何返回的数字少了1，暂时先加1
+    int count = field("ingredients").toInt()+1;
+
+    //主料信息界面布局和控件生成
+    layout = new QFormLayout;
+    this->setLayout(layout);
+
+    //QVector<QLineEdit*> season_count(count);
+
+    //调料的详情和重量输入
+    QVector<QLineEdit*> ingredient_detail(count);
+    QVector<QLineEdit*> ingredient_weight(count);
+    for(int i = 0;i < count;i++)
+    {
+        ingredient_detail[i] = new QLineEdit;
+        QRegExp regExp2("[\u4e00-\u9fa5_a-zA-Z0-9]{0,9}");
+        ingredient_detail[i]->setValidator(new QRegExpValidator(regExp2,this));
+        ingredient_weight[i] = new QLineEdit;
+        QRegExp regExp3("[0-9]{0,9}");
+        ingredient_weight[i]->setValidator(new QRegExpValidator(regExp3,this));
+        layout->addRow("主料描述"+QString::number(i+1),ingredient_detail[i]);
+        layout->addRow("重量描述"+QString::number(i+1),ingredient_weight[i]);
+        registerField("ingredient_detail"+QString::number(i),ingredient_detail[i]);
+        registerField("ingredient_weight"+QString::number(i),ingredient_weight[i]);
+    }
+}
+
+
+
+/**
+ * @brief QWizardPage_ingredients::cleanupPage 调料引导页后退键触发的程序入口
+ * @note 用来清除在当前layout中生成的输入控件
+ */
+void QWizardPage_ingredients::cleanupPage(){
+    QLayoutItem *child;
+    while((child = layout->takeAt(0))!=0)
+    {
+          layout->removeWidget(child->widget());
+          child->widget()->setParent(0);
+          delete child;
+}
+
+    delete layout;
+
+}
+
+
+
+//---------------------------------------------------------------------------------QWizardPage_season的实现
 
 
 QWizardPage_season::QWizardPage_season()
@@ -91,7 +174,7 @@ void QWizardPage_season::initializePage()
 
     QVector<QWidget*> hWidget(count);
     QVector<QFormLayout*> layout(count);
-    QVector<QLineEdit*> season_count(count);
+    QVector<QComboBox*> season_count(count);
 
     for(int i = 0;i < count;i++)
     {
@@ -104,15 +187,10 @@ void QWizardPage_season::initializePage()
         //配料个数输入
         QStringList textList;
         //使用QComboBox制成下拉菜单
-        QComboBox* season_step = new QComboBox;
+        season_count[i] = new QComboBox;
         for(int i = 1; i < 6 ;i++)
             textList<<QString::number(i);
-        season_step->addItems(textList);
-
-        season_count[i] = new QLineEdit;
-        //正则仅仅匹配汉字（1-5）
-        QRegExp regExp1("[1-5]");
-        season_count[i]->setValidator(new QRegExpValidator(regExp1,this));
+        season_count[i]->addItems(textList);
 
         //控件添加到布局
         layout[i]->addRow("配料个数",season_count[i]);
@@ -142,12 +220,6 @@ void QWizardPage_season::initializePage()
         tabWidget->addTab(hWidget[i],QString::number(i+1));
 
     }
-    //添加主料输入
-    QLineEdit* main_season_name = new QLineEdit;
-    main_season_name->setPlaceholderText("输入主料名称");
-    hLayout->addWidget(main_season_name);
-    registerField("main_season_name*",main_season_name);
-
 
 }
 
@@ -303,7 +375,7 @@ void QWizardPage_state::cleanupPage(){
           hLayout->removeWidget(child->widget());
           child->widget()->setParent(0);
           delete child;
-}
+    }
 
     delete hLayout;
 

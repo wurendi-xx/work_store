@@ -28,11 +28,13 @@ public:
     {
         Page_First,
         Page_Second,
-        Page_Third
+        Page_Third,
+        Page_Fourth
     };
 
 private:
     QWizardPage_main* page_main;
+    QWizardPage_ingredients* page_ingredients;
     QWizardPage_season* page_season;
     QWizardPage_state* page_state;
 

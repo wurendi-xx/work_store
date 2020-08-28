@@ -61,20 +61,25 @@
 Wizard_bin_menu::Wizard_bin_menu(QWidget *parent):
     QWizard(parent),
     page_main(new QWizardPage_main),
+    page_ingredients(new QWizardPage_ingredients),
     page_season(new QWizardPage_season),
     page_state(new QWizardPage_state)
 {
     //三个引导界面，分别用来填写主要，调料和状态信息
     page_main->setTitle("主要信息");
+    page_ingredients->setTitle("主料信息");
     page_season->setTitle("调料信息");
     page_state->setTitle("状态信息");
 
 
     //引导界面添加
     setPage(Wizard_bin_menu::Page_First,page_main);
-    setPage(Wizard_bin_menu::Page_Second,page_season);
-    setPage(Wizard_bin_menu::Page_Third,page_state);
+    setPage(Wizard_bin_menu::Page_Second,page_ingredients);
+    setPage(Wizard_bin_menu::Page_Third,page_season);
+    setPage(Wizard_bin_menu::Page_Fourth,page_state);
     setWindowTitle("菜谱制作");
+
+    //setWizardStyle(QWizard::MacStyle);
 
 }
 
@@ -126,6 +131,12 @@ bool Wizard_bin_menu::bin_maker()
     int tmpInt;
 
     //开始写入数据
+    //写入菜谱ID
+    tmpInt = field("菜谱ID").toInt();
+    out.writeRawData((const char *)&tmpInt,4);
+
+    //写入菜谱名
+    tmp.clear();
     tmp = field("menu_name").toByteArray();
     out.writeRawData(toGBK(tmp),tmp.size());
     for(int i = 0;i < 20-tmp.size();i++)
@@ -133,21 +144,24 @@ bool Wizard_bin_menu::bin_maker()
         out.writeRawData(blank3,1);
     }
 
-    tmp.clear();
+    //写入总时间
     tmpInt = field("total_time").toInt();
     out.writeRawData((const char *)&tmpInt,4);
-    tmp.clear();
+
+    //写入调料步骤数
     tmpInt = field("season_steps").toInt()+1;
     out.writeRawData((const char *)&tmpInt,4);
-    tmp.clear();
+
+    //写入状态步骤数
     tmpInt = field("state_steps").toInt()+1;
     out.writeRawData((const char *)&tmpInt,4);
-    tmp.clear();
 
+
+    //写入调料盒描述
     for(int i = 0;i < 5;i++)
     {
-        tmp.clear();
-        tmpInt = field("season_count"+QString::number(i)).toInt();
+        //调料个数
+        tmpInt = field("season_count"+QString::number(i)).toInt()+1;
         if(tmp != nullptr)
             out.writeRawData((const char *)&tmpInt,4);
         else
@@ -175,20 +189,41 @@ bool Wizard_bin_menu::bin_maker()
         }
     }
 
-    tmp.clear();
-    tmp = field("main_season_name").toByteArray();
+    //写入主料描述
+    //写入主料数量
+
+    tmpInt = field("ingredients").toInt();
     if(tmp != nullptr)
+        out.writeRawData((const char *)&tmpInt,4);
+    else
+        out.writeRawData(blank0,4);
+    //写入主料信息
+    for(int i = 0;i < 10;i++)
     {
-        out.writeRawData(toGBK(tmp),tmp.size());
-        for(int i = 0;i < 40-tmp.size();i++)
+
+        tmp.clear();
+        tmp = field("ingredient_detail"+QString::number(i)).toByteArray();
+        if(tmp != nullptr)
         {
-            out.writeRawData(blank3,1);
+            out.writeRawData(toGBK(tmp),tmp.size());
+            for(int i = 0;i < 20-tmp.size();i++)
+            {
+                out.writeRawData(blank3,1);
+            }
         }
+        else
+            out.writeRawData(blank1,20);
+        tmp.clear();
+        tmpInt = field("ingredient_weight"+QString::number(i)).toInt();
+        if(tmp != nullptr)
+            out.writeRawData((const char *)&tmpInt,4);
+        else
+            out.writeRawData(blank0,4);
 
     }
-    else
-        out.writeRawData(blank2,40);
 
+
+    //写入运行状态描述
     for(int i = 0;i < 36;i ++)
     {
         int tmpInt;

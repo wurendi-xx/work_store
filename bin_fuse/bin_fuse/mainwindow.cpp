@@ -36,7 +36,7 @@ void MainWindow::on_pushButton_menu_generate_clicked()
 
 void MainWindow::on_action_2_triggered()
 {
-    QMessageBox::about(this,"bin文件辅助制作","内部使用，没有泛用性");
+    QMessageBox::about(this,"bin文件辅助制作","内部使用，没有泛用性\nby:WuRendi");
 }
 
 void MainWindow::on_action_triggered()

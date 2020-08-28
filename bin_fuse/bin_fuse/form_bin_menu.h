@@ -42,7 +42,24 @@ private:
 };
 
 /**
- * @brief The QWizardPage_season class 菜谱制作第二页调料信息的引导页界面
+ * @brief The QWizardPage_season class 菜谱制作第二页主料信息的引导页界面
+ */
+class QWizardPage_ingredients : public QWizardPage
+{
+public:
+    QWizardPage_ingredients();
+    void initializePage();
+    void cleanupPage();
+
+
+private:
+    /** @brief 用于排版formlayout界面*/
+    QFormLayout* layout;
+
+};
+
+/**
+ * @brief The QWizardPage_season class 菜谱制作第三页调料信息的引导页界面
  */
 class QWizardPage_season : public QWizardPage
 {
@@ -59,7 +76,7 @@ private:
 };
 
 /**
- * @brief The QWizardPage_state class 菜谱制作第三页状态信息的引导页界面
+ * @brief The QWizardPage_state class 菜谱制作第四页状态信息的引导页界面
  */
 class QWizardPage_state : public QWizardPage
 {
