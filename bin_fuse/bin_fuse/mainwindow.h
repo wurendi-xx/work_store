@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "wizard_bin_fuse.h"
 #include "wizard_bin_menu.h"
+#include "form_bin_menu.h"
 
 
 namespace Ui {
@@ -38,6 +39,8 @@ private slots:
      * @brief on_action_triggered 菜单栏中的帮助函数入口
      */
     void on_action_triggered();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;

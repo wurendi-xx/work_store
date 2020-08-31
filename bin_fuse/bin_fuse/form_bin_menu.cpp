@@ -188,7 +188,7 @@ void QWizardPage_season::initializePage()
         QStringList textList;
         //使用QComboBox制成下拉菜单
         season_count[i] = new QComboBox;
-        for(int i = 1; i < 6 ;i++)
+        for(int i = 0; i < 6 ;i++)
             textList<<QString::number(i);
         season_count[i]->addItems(textList);
 
@@ -213,7 +213,6 @@ void QWizardPage_season::initializePage()
             layout[i]->addRow("重量描述"+QString::number(j+1),season_weight[j]);
             registerField("season_detail"+QString::number(i)+QString::number(j),season_detail[j]);
             registerField("season_weight"+QString::number(i)+QString::number(j),season_weight[j]);
-
         }
 
         hWidget[i]->setLayout(layout[i]);
@@ -291,24 +290,19 @@ void QWizardPage_state::initializePage()
         //运行状态
         QStringList textList;
         run_state[i] = new QComboBox;
-        textList<<"Preparation"<<"CoverControl"<<"Heating"
-               <<"Feeding"<<"Cleaning"<<"Waitting"
-              <<"PowerOn"<<"NetCheck"<<"ModeSet"
-             <<"MenuSelect"<<"Suspend"<<"Testing"
-            <<"SeasonList"<<"CheckPreparation"
-           <<"FixedModeSelect"<<"FixedModeWork";
+        textList.append({"备料过程","锅盖控制过程","加热过程","加料过程","清洗过程","等待过程","保温过程","焖煮过程"});
         run_state[i]->addItems(textList);
         textList.clear();
 
         //锅盖状态
         run_cover[i] = new QComboBox;
-        textList<<"CoverReset"<<"CoverOpen"<<"CoverClose"<<"CoverStop";
+        textList.append({"维持状态","开盖","关盖"});
         run_cover[i]->addItems(textList);
         textList.clear();
 
         //搅拌状态
         run_stir[i] = new QComboBox;
-        textList<<"StirReset"<<"StirRun"<<"StirStop";
+        textList.append({"不搅拌","搅拌"});
         run_stir[i]->addItems(textList);
         textList.clear();
 
@@ -357,8 +351,6 @@ void QWizardPage_state::initializePage()
 
     }
 
-
-
 }
 
 
@@ -380,3 +372,157 @@ void QWizardPage_state::cleanupPage(){
     delete hLayout;
 
 }
+
+//---------------------------------------------------------------------------------QTableView_menu的实现
+
+/**
+ * @brief QTableView_menu::QTableView_menu 读取菜谱bin文件的信息
+ * @param parent 父对象
+ * @param file_path 菜谱文件地址
+ */
+QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
+    QTableView(parent),
+    menu_path(file_path)
+{
+    setWindowFlags(Qt::Window);
+    QFile menu_read(menu_path);
+    menu_read.open(QIODevice::ReadOnly);
+    QByteArray tmp = menu_read.readAll();
+    Menu = (Menu1_t*) (tmp.data());
+    QStandardItemModel* model = new QStandardItemModel(this);
+
+    model->setHorizontalHeaderItem(0, new QStandardItem("描述") );
+    model->setHorizontalHeaderItem(1, new QStandardItem("内容") );
+
+    model->setItem(0, 0, new QStandardItem("菜谱ID"));
+    model->setItem(0, 1, new QStandardItem(QString::number(Menu->ID, 10)));
+
+    model->setItem(1, 0, new QStandardItem("菜名"));
+    model->setItem(1, 1, new QStandardItem(toUTF((char*)Menu->DishName)));
+
+    model->setItem(2, 0, new QStandardItem("总时间"));
+    model->setItem(2, 1, new QStandardItem(QString::number(Menu->AllTime, 10)));
+
+    model->setItem(3, 0, new QStandardItem("主料个数"));
+    model->setItem(3, 1, new QStandardItem(QString::number(Menu->MainSeasoningNum, 10)));
+
+    model->setItem(4, 0, new QStandardItem("加料步骤"));
+    model->setItem(4, 1, new QStandardItem(QString::number(Menu->SeasoningStepNum, 10)));
+
+    model->setItem(5, 0, new QStandardItem("运行步骤"));
+    model->setItem(5, 1, new QStandardItem(QString::number(Menu->RunStepNum, 10)));
+
+    int tableIndex = 5;
+
+    for(int j = 0;j < Menu->MainSeasoningNum;j ++)
+    {
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("主料"+QString::number(j + 1,10)+"描述"));
+        model->setItem(tableIndex, 1, new QStandardItem(toUTF((char*)Menu->MainSeasoning[j].Name)));
+
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("主料"+QString::number(j + 1,10)+"重量（g）"));
+        model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->MainSeasoning[j].Weight, 10)));
+    }
+
+
+    for(int i = 0 ;i < Menu->SeasoningStepNum ;i++)
+    {
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "料盒的调料个数"));
+        model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->Seasoning[i].SeasoningNum, 10)));
+        model->item(tableIndex,0)->setForeground(QBrush(QColor(255, 0, 0)));
+
+        for(int j = 0;j < 5;j ++)
+        {
+            tableIndex ++;
+            model->setItem(tableIndex, 0, new QStandardItem("料盒调料描述" + QString::number(j + 1,10)));
+            model->setItem(tableIndex, 1, new QStandardItem(toUTF((char*)Menu->Seasoning[i].SeasoningInf[j].Name)));
+
+            tableIndex ++;
+            model->setItem(tableIndex, 0, new QStandardItem("料盒调料重量(g)"+QString::number(j + 1,10)));
+            model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->Seasoning[i].SeasoningInf[j].Weight, 10)));
+        }
+    }
+
+    QString state_display;
+    for(int i = 0;i < Menu->RunStepNum;i++)
+    {
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次运行状态"));
+        switch (Menu->RunStep[i].State)
+        {
+            case 0:state_display = "备料过程";break;
+            case 1:state_display = "锅盖控制过程";break;
+            case 2:state_display = "加热过程";break;
+            case 3:state_display = "加料过程";break;
+            case 4:state_display = "清洗过程";break;
+            case 5:state_display = "等待过程";break;
+            case 6:state_display = "保温过程";break;
+            case 7:state_display = "焖煮过程";break;
+        }
+        model->setItem(tableIndex, 1, new QStandardItem(state_display));
+        model->item(tableIndex,0)->setForeground(QBrush(QColor(255, 0, 0)));
+
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次锅盖状态"));
+        switch (Menu->RunStep[i].Cover)
+        {
+            case 0:state_display = "维持状态";break;
+            case 1:state_display = "开盖";break;
+            case 2:state_display = "关盖";break;
+        }
+        model->setItem(tableIndex, 1, new QStandardItem(state_display));
+
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次搅拌状态"));
+        switch (Menu->RunStep[i].Stir)
+        {
+            case 0:state_display = "不搅拌";break;
+            case 1:state_display = "搅拌";break;
+        }
+        model->setItem(tableIndex, 1, new QStandardItem(state_display));
+
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次加热功率(*200W)"));
+        model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->RunStep[i].Power, 10)));
+
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次运行时间(s)"));
+        model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->RunStep[i].Time, 10)));
+
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次运行温度(℃)"));
+        model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->RunStep[i].Temperature, 10)));
+
+        tableIndex ++;
+        model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次运行描述"));
+        model->setItem(tableIndex, 1, new QStandardItem(toUTF((char*)Menu->RunStep[i].Txt)));
+
+
+    }
+
+
+    this->setModel(model);
+    this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+/**
+ * @brief QTableView_menu::toUTF 如果想进行字符编码转化，一定要确保输入的参数是原始数据，不能经过QString强制转化，因为在char*转为QString的过程中就已经实现了一次解码。
+ * @param input
+ * @return
+ */
+QString QTableView_menu::toUTF(QByteArray input)
+{
+
+    QString  text = QTextCodec::codecForName( "GBK" )->toUnicode(input);
+
+    return text;
+}
+
+QTableView_menu::~QTableView_menu()
+{
+
+}
+
+

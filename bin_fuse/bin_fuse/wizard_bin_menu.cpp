@@ -132,8 +132,8 @@ bool Wizard_bin_menu::bin_maker()
 
     //开始写入数据
     //写入菜谱ID
-    tmpInt = field("菜谱ID").toInt();
-    out.writeRawData((const char *)&tmpInt,4);
+    tmpInt = field("menu_id").toInt();
+    out.writeRawData((const char*)&tmpInt,4);
 
     //写入菜谱名
     tmp.clear();
@@ -161,8 +161,8 @@ bool Wizard_bin_menu::bin_maker()
     for(int i = 0;i < 5;i++)
     {
         //调料个数
-        tmpInt = field("season_count"+QString::number(i)).toInt()+1;
-        if(tmp != nullptr)
+        tmpInt = field("season_count"+QString::number(i)).toInt();
+        if(tmpInt != 0)
             out.writeRawData((const char *)&tmpInt,4);
         else
             out.writeRawData(blank0,4);
@@ -182,7 +182,7 @@ bool Wizard_bin_menu::bin_maker()
                 out.writeRawData(blank1,20);
             tmp.clear();
             tmpInt = field("season_weight"+QString::number(i)+QString::number(j)).toInt();
-            if(tmp != nullptr)
+            if(tmpInt != 0)
                 out.writeRawData((const char *)&tmpInt,4);
             else
                 out.writeRawData(blank0,4);
@@ -192,8 +192,8 @@ bool Wizard_bin_menu::bin_maker()
     //写入主料描述
     //写入主料数量
 
-    tmpInt = field("ingredients").toInt();
-    if(tmp != nullptr)
+    tmpInt = field("ingredients").toInt()+1;
+    if(tmpInt != 0)
         out.writeRawData((const char *)&tmpInt,4);
     else
         out.writeRawData(blank0,4);
@@ -215,7 +215,7 @@ bool Wizard_bin_menu::bin_maker()
             out.writeRawData(blank1,20);
         tmp.clear();
         tmpInt = field("ingredient_weight"+QString::number(i)).toInt();
-        if(tmp != nullptr)
+        if(tmpInt != 0)
             out.writeRawData((const char *)&tmpInt,4);
         else
             out.writeRawData(blank0,4);
@@ -250,19 +250,19 @@ bool Wizard_bin_menu::bin_maker()
             out.writeRawData(blank0,4);
         tmp.clear();
         tmpInt = field("run_power"+QString::number(i)).toInt()+1;
-        if(tmp != nullptr)
+        if(tmpInt != 0)
             out.writeRawData((const char *)&tmpInt,4);
         else
             out.writeRawData(blank0,4);
         tmp.clear();
         tmpInt = field("run_time"+QString::number(i)).toInt();
-        if(tmp != nullptr)
+        if(tmpInt != 0)
             out.writeRawData((const char *)&tmpInt,4);
         else
             out.writeRawData(blank0,4);
         tmp.clear();
         tmpInt = field("run_temperature"+QString::number(i)).toInt();
-        if(tmp != nullptr)
+        if(tmpInt != 0)
             out.writeRawData((const char *)&tmpInt,4);
         else
             out.writeRawData(blank0,4);
@@ -336,7 +336,6 @@ QByteArray Wizard_bin_menu::toGBK(QString input)
     strUnicode= utf8->toUnicode(input.toLocal8Bit().data());
     tmp_Qbit= gbk->fromUnicode(strUnicode);
     return tmp_Qbit;
-
 }
 Wizard_bin_menu::~Wizard_bin_menu()
 {
