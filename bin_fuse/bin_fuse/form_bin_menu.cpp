@@ -41,7 +41,7 @@ QWizardPage_main::QWizardPage_main()
     //总时间
     QLineEdit* total_time = new QLineEdit;
 
-    //正则仅仅匹配汉字
+    //正则仅仅匹配数字
     //QRegExp regExp2("[0-9]{0,9}");
     total_time->setValidator(new QRegExpValidator(regExp2,this));
 
@@ -108,6 +108,10 @@ void QWizardPage_ingredients::initializePage()
     layout = new QFormLayout;
     this->setLayout(layout);
 
+    QLabel* label_illustration = new QLabel;
+    label_illustration->setText("主料的描述限定10个字符");
+    layout->addWidget(label_illustration);
+
     //QVector<QLineEdit*> season_count(count);
 
     //调料的详情和重量输入
@@ -116,7 +120,7 @@ void QWizardPage_ingredients::initializePage()
     for(int i = 0;i < count;i++)
     {
         ingredient_detail[i] = new QLineEdit;
-        QRegExp regExp2("[\u4e00-\u9fa5_a-zA-Z0-9]{0,9}");
+        QRegExp regExp2("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.]{0,10}");
         ingredient_detail[i]->setValidator(new QRegExpValidator(regExp2,this));
         ingredient_weight[i] = new QLineEdit;
         QRegExp regExp3("[0-9]{0,9}");
@@ -168,6 +172,11 @@ void QWizardPage_season::initializePage()
     int count = field("season_steps").toInt()+1;
 
     hLayout = new QVBoxLayout(this);
+
+    QLabel* label_illustration = new QLabel;
+    label_illustration->setText("调料的描述限定10个字符，调料步骤中调料个数没有检测，请确保对应");
+    hLayout->addWidget(label_illustration);
+
     QTabWidget* tabWidget;
     tabWidget = new QTabWidget;
     hLayout->addWidget(tabWidget);
@@ -204,7 +213,7 @@ void QWizardPage_season::initializePage()
         for(int j = 0;j < 5;j++)
         {
             season_detail[j] = new QLineEdit;
-            QRegExp regExp2("[\u4e00-\u9fa5_a-zA-Z0-9]{0,9}");
+            QRegExp regExp2("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.]{0,10}");
             season_detail[j]->setValidator(new QRegExpValidator(regExp2,this));
             season_weight[j] = new QLineEdit;
             QRegExp regExp3("[0-9]{0,9}");
@@ -259,7 +268,13 @@ void QWizardPage_state::initializePage()
     int count = field("state_steps").toInt()+1;
 
     //水平布局实例化
-    hLayout = new QHBoxLayout(this);
+    hLayout = new QVBoxLayout(this);
+
+    //说明文字
+    QLabel* label_illustration = new QLabel;
+    label_illustration->setText("状态的描述限定20个字符");
+    hLayout->addWidget(label_illustration);
+
     //tabWidget布局实例化
     QTabWidget* tabWidget;
     tabWidget = new QTabWidget;
@@ -290,25 +305,25 @@ void QWizardPage_state::initializePage()
         //运行状态
         QStringList textList;
         run_state[i] = new QComboBox;
-        textList.append({"备料过程","锅盖控制过程","加热过程","加料过程","清洗过程","等待过程","保温过程","焖煮过程"});
+        textList.append({"备料过程0x00","锅盖控制过程0x01","加热过程0x02","加料过程0x03","清洗过程0x04","等待过程0x05","保温过程0x06","焖煮过程0x07"});
         run_state[i]->addItems(textList);
         textList.clear();
 
         //锅盖状态
         run_cover[i] = new QComboBox;
-        textList.append({"维持状态","开盖","关盖"});
+        textList.append({"维持状态0x00","开盖0x01","关盖0x02"});
         run_cover[i]->addItems(textList);
         textList.clear();
 
         //搅拌状态
         run_stir[i] = new QComboBox;
-        textList.append({"不搅拌","搅拌"});
+        textList.append({"不搅拌0x00","搅拌0x01"});
         run_stir[i]->addItems(textList);
         textList.clear();
 
         //火力力度
         run_power[i] = new QComboBox;
-        for(int i = 1; i < 11 ;i++)
+        for(int i = 0; i < 11 ;i++)
             textList<<QString::number(i);
         run_power[i]->addItems(textList);
 
@@ -324,16 +339,16 @@ void QWizardPage_state::initializePage()
 
         //文字描述
         run_detail[i] = new QLineEdit;
-        QRegExp regExp3("[\u4e00-\u9fa5_a-zA-Z0-9]{0,9}");
+        QRegExp regExp3("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.]{0,20}");
         run_detail[i]->setValidator(new QRegExpValidator(regExp3,this));
 
         //输入控件添加到布局
         layout[i]->addRow("运行状态",run_state[i]);
         layout[i]->addRow("锅盖状态",run_cover[i]);
         layout[i]->addRow("搅动状态",run_stir[i]);
-        layout[i]->addRow("火力功率",run_power[i]);
-        layout[i]->addRow("运行时间",run_time[i]);
-        layout[i]->addRow("运行温度",run_temperature[i]);
+        layout[i]->addRow("火力功率(*200W)",run_power[i]);
+        layout[i]->addRow("运行时间（s）",run_time[i]);
+        layout[i]->addRow("运行温度(℃)",run_temperature[i]);
         layout[i]->addRow("文字描述",run_detail[i]);
         //输入控件注册到引导页
         registerField("run_state"+QString::number(i),run_state[i]);
@@ -385,11 +400,19 @@ QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
     menu_path(file_path)
 {
     setWindowFlags(Qt::Window);
-    QFile menu_read(menu_path);
-    menu_read.open(QIODevice::ReadOnly);
-    QByteArray tmp = menu_read.readAll();
+    //保存按钮
+    QPushButton* save_button = new QPushButton(this);
+    save_button->setText(tr("保存为一个new后缀的新文件"));
+    connect(save_button,SIGNAL(clicked()),this,SLOT(save_menu()));
+    //读取文件
+    menu_read = new QFile(menu_path);
+    menu_read->open(QIODevice::ReadOnly);
+    tmp = menu_read->readAll();
     Menu = (Menu1_t*) (tmp.data());
-    QStandardItemModel* model = new QStandardItemModel(this);
+    //memcpy(Menu,(Menu1_t*)tmp.data(),sizeof(tmp.data()));
+    model = new QStandardItemModel(this);
+
+    //int tableIndex = 0;
 
     model->setHorizontalHeaderItem(0, new QStandardItem("描述") );
     model->setHorizontalHeaderItem(1, new QStandardItem("内容") );
@@ -460,8 +483,10 @@ QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
             case 5:state_display = "等待过程";break;
             case 6:state_display = "保温过程";break;
             case 7:state_display = "焖煮过程";break;
+            default:state_display = "错误数据";break;
         }
-        model->setItem(tableIndex, 1, new QStandardItem(state_display));
+        model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->RunStep[i].State, 10)));
+        model->setItem(tableIndex, 2, new QStandardItem(state_display));
         model->item(tableIndex,0)->setForeground(QBrush(QColor(255, 0, 0)));
 
         tableIndex ++;
@@ -471,8 +496,10 @@ QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
             case 0:state_display = "维持状态";break;
             case 1:state_display = "开盖";break;
             case 2:state_display = "关盖";break;
+            default:state_display = "错误数据";break;
         }
-        model->setItem(tableIndex, 1, new QStandardItem(state_display));
+        model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->RunStep[i].Cover, 10)));
+        model->setItem(tableIndex, 2, new QStandardItem(state_display));
 
         tableIndex ++;
         model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次搅拌状态"));
@@ -480,8 +507,10 @@ QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
         {
             case 0:state_display = "不搅拌";break;
             case 1:state_display = "搅拌";break;
+            default:state_display = "错误数据";break;
         }
-        model->setItem(tableIndex, 1, new QStandardItem(state_display));
+        model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->RunStep[i].Stir, 10)));
+        model->setItem(tableIndex, 2, new QStandardItem(state_display));
 
         tableIndex ++;
         model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次加热功率(*200W)"));
@@ -498,13 +527,13 @@ QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
         tableIndex ++;
         model->setItem(tableIndex, 0, new QStandardItem("第" + QString::number(i + 1,10) + "次运行描述"));
         model->setItem(tableIndex, 1, new QStandardItem(toUTF((char*)Menu->RunStep[i].Txt)));
-
-
     }
 
 
     this->setModel(model);
-    this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    menu_read->close();
 }
 
 /**
@@ -518,6 +547,137 @@ QString QTableView_menu::toUTF(QByteArray input)
     QString  text = QTextCodec::codecForName( "GBK" )->toUnicode(input);
 
     return text;
+}
+
+/**
+ * @brief Wizard_bin_menu::toGBK 将unicode转化为GBK
+ * @param input
+ * @return
+ */
+QByteArray QTableView_menu::toGBK(QString input)
+{
+    QTextCodec* gbk = QTextCodec::codecForName("gbk");
+    QTextCodec* utf8 = QTextCodec::codecForName("UTF-8");
+    QTextCodec::setCodecForLocale(utf8);
+    QByteArray tmp_Qbit ;
+    QString strUnicode;
+
+    strUnicode= utf8->toUnicode(input.toLocal8Bit().data());
+    tmp_Qbit= gbk->fromUnicode(strUnicode);
+    return tmp_Qbit;
+}
+
+
+void QTableView_menu::save_menu()
+{
+    //保存文件
+
+
+    int tableIndex = 0;
+    QModelIndex index = model->index(0,0);
+    QString name = model->data(index).toString();
+
+    tableIndex = 0;
+    index = model->index(tableIndex,1);
+    Menu->ID = model->data(index).toUInt();
+
+    tableIndex ++;
+    index = model->index(tableIndex,1);
+    std::strncpy((char*)Menu->DishName,toGBK(model->data(index).toString()),20);
+
+
+    tableIndex ++;
+    index = model->index(tableIndex,1);
+    Menu->AllTime = model->data(index).toUInt();
+
+    tableIndex ++;
+    index = model->index(tableIndex,1);
+    Menu->MainSeasoningNum = model->data(index).toUInt();
+
+    tableIndex ++;
+    index = model->index(tableIndex,1);
+    Menu->SeasoningStepNum = model->data(index).toUInt();
+
+    tableIndex ++;
+    index = model->index(tableIndex,1);
+    Menu->RunStepNum = model->data(index).toUInt();
+
+
+    for(int j = 0;j < Menu->MainSeasoningNum;j ++)
+    {
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        std::strncpy((char*)Menu->MainSeasoning[j].Name,toGBK(model->data(index).toString()),20);
+
+
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        Menu->MainSeasoning[j].Weight = model->data(index).toUInt();
+    }
+
+
+    for(int i = 0 ;i < Menu->SeasoningStepNum ;i++)
+    {
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        Menu->Seasoning[i].SeasoningNum = model->data(index).toUInt();
+
+        for(int j = 0;j < 5;j ++)
+        {
+            tableIndex ++;
+            index = model->index(tableIndex,1);
+            std::strncpy((char*)Menu->Seasoning[i].SeasoningInf[j].Name,toGBK(model->data(index).toString()),20);
+
+            tableIndex ++;
+            index = model->index(tableIndex,1);
+            Menu->Seasoning[i].SeasoningInf[j].Weight = model->data(index).toUInt();
+        }
+    }
+
+    QString state_display;
+    for(int i = 0;i < Menu->RunStepNum;i++)
+    {
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        Menu->RunStep[i].State = model->data(index).toUInt();
+
+
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        Menu->RunStep[i].Cover = model->data(index).toUInt();
+
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        Menu->RunStep[i].Stir = model->data(index).toUInt();
+
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        Menu->RunStep[i].Power = model->data(index).toUInt();
+
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        Menu->RunStep[i].Time = model->data(index).toUInt();
+
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        Menu->RunStep[i].Temperature = model->data(index).toUInt();
+
+
+        tableIndex ++;
+        index = model->index(tableIndex,1);
+        std::strncpy((char*)Menu->RunStep[i].Txt,toGBK(model->data(index).toString()),40);
+
+
+    }
+
+    //QByteArray tmp = (char*)Menu;
+    QFileInfo inf = QFileInfo(menu_path);
+    QFile menu_save(inf.baseName()+"new.bin");
+    menu_save.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QDataStream out(&menu_save);
+    int impsize = tmp.size();
+    out.writeRawData(tmp,tmp.size());
+    menu_save.close();
 }
 
 QTableView_menu::~QTableView_menu()

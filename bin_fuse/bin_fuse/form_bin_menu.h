@@ -18,6 +18,9 @@
 #include <QStandardItemModel>
 #include <QFile>
 #include <QTextCodec>
+#include <QPushButton>
+#include <cstring>
+#include <QFileInfo>
 
 /**
  * @brief The form_bin_menu class 菜谱制作页的预留类
@@ -92,7 +95,7 @@ public:
 
 private:
     /** @brief 用于排版tabWidget界面*/
-    QHBoxLayout* hLayout;
+    QVBoxLayout* hLayout;
 
 };
 
@@ -108,6 +111,11 @@ public:
 
     QString menu_path;
     QString toUTF(QByteArray input);
+    QByteArray toGBK(QString input);
+
+public slots:
+    void save_menu();
+
 private:
     typedef struct
     {
@@ -146,6 +154,12 @@ private:
     }Menu1_t;
 
   Menu1_t* Menu;
+
+  QStandardItemModel* model;
+
+  QFile* menu_read;
+
+  QByteArray tmp;
 
 };
 

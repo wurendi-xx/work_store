@@ -31,6 +31,7 @@ public:
         Page_Pic60K,/**< 60K图片引导页索引*/
         Page_Pic120K,/**< 120K图片引导页索引*/
         Page_Font,/**< 字体引导页索引*/
+        Page_Font_ASCII,/**< 字体引导页索引*/
     };
 
 
@@ -41,6 +42,7 @@ private:
     Form_bin_fuse* page_pic_60k;
     Form_bin_fuse* page_pic_120k;
     Form_bin_fuse* page_font;
+    Form_bin_fuse* page_font_ASCII;
 
     QTextStream out_log;
 

@@ -60,12 +60,12 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_action_2_triggered()
 {
-    QMessageBox::about(this,"bin文件辅助制作","菜谱制作及bin文件集成软件©Version0.0.0.1\n仅供内部使用，没有泛用性\nby:WuRendi\nPs:调料步骤中调料个数没有检测，请确保对应");
+    QMessageBox::about(this,"bin文件辅助制作","菜谱制作及bin文件集成软件©Version0.0.0.1\n仅供内部使用，没有泛用性\nby:WuRendi\n");
 }
 
 void MainWindow::on_action_triggered()
 {
-    QString str = "菜谱生成引导界面会在当前目录生成menu.bin文件\nbin文件融合会在当前目录生成bin_fues.bin文件和fuse_log.txt文件";
+    QString str = "菜谱生成引导界面会在当前目录生成menu.bin文件\nbin文件融合会在当前目录生成bin_fues.bin文件和fuse_log.txt文件\n查看菜谱只能读取本文件生成的菜谱\n!!!目前菜谱制作的回退功能有bug，如果想回到上一个界面修改内容会导致当前数据无法保存到本地，所以请用重启代替回退";
     QMessageBox::about(this,"教程",str);
 }
 

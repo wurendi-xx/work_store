@@ -19,6 +19,9 @@
 #define FONT_16_ADD 6020
 #define FONT_32_ADD 9620
 #define FONT_56_ADD 13020
+#define AFONT_16_ADD 13032
+#define AFONT_32_ADD 13080
+#define AFONT_56_ADD 14020
 //bin文件大小
 #define MENU_SIZE 4
 #define PIC_8K_SIZE 8
@@ -28,6 +31,9 @@
 #define FONT_16_SIZE 300
 #define FONT_32_SIZE 1200
 #define FONT_56_SIZE 3400
+#define AFONT_16_SIZE 4
+#define AFONT_32_SIZE 16
+#define AFONT_56_SIZE 40
 
 /**
  *@}
@@ -119,7 +125,8 @@ Wizard_bin_fuse::Wizard_bin_fuse(QWidget *parent) :
     page_pic_28k(new Form_bin_fuse),
     page_pic_60k(new Form_bin_fuse),
     page_pic_120k(new Form_bin_fuse),
-    page_font(new Form_bin_fuse)
+    page_font(new Form_bin_fuse),
+    page_font_ASCII(new Form_bin_fuse)
 {
 
     page_menu->setTitle("菜谱融合");
@@ -127,7 +134,8 @@ Wizard_bin_fuse::Wizard_bin_fuse(QWidget *parent) :
     page_pic_28k->setTitle("28K图片融合");
     page_pic_60k->setTitle("60K图片融合");
     page_pic_120k->setTitle("120K图片融合");
-    page_font->setTitle("字体融合");
+    page_font->setTitle("BGK字体融合");
+    page_font_ASCII->setTitle("ASCII字库融合");
 
     setPage(Wizard_bin_fuse::Page_Menu,page_menu);
     setPage(Wizard_bin_fuse::Page_Pic8K,page_pic_8k);
@@ -135,6 +143,7 @@ Wizard_bin_fuse::Wizard_bin_fuse(QWidget *parent) :
     setPage(Wizard_bin_fuse::Page_Pic60K,page_pic_60k);
     setPage(Wizard_bin_fuse::Page_Pic120K,page_pic_120k);
     setPage(Wizard_bin_fuse::Page_Font,page_font);
+    setPage(Wizard_bin_fuse::Page_Font_ASCII,page_font_ASCII);
     setWindowTitle("bin文件融合");
 
 }
@@ -189,6 +198,7 @@ bool Wizard_bin_fuse::bin_fuse()
     QStringList pic_60k_file =  page_pic_60k->files;
     QStringList pic_120k_file =  page_pic_120k->files;
     QStringList font_file =  page_font->files;
+    QStringList fontA_file = page_font_ASCII->files;
 
     //辅助确定当前写入指针位置
     int cur_index = 0;
@@ -225,7 +235,7 @@ bool Wizard_bin_fuse::bin_fuse()
     //120k图片融合
     bin_write(out,pic_120k_file,progressBar,PIC_120K_SIZE,PIC_120K_ADD,cur_index);
 
-    //字库融合
+    //GBK字库融合
     QStringList font_16_file;
     QStringList font_32_file;
     QStringList font_56_file;
@@ -246,6 +256,30 @@ bool Wizard_bin_fuse::bin_fuse()
     bin_write(out,font_16_file,progressBar,FONT_16_SIZE,FONT_16_ADD,cur_index);
     bin_write(out,font_32_file,progressBar,FONT_32_SIZE,FONT_32_ADD,cur_index);
     bin_write(out,font_56_file,progressBar,FONT_56_SIZE,FONT_56_ADD,cur_index);
+
+
+
+    //ASCII字库融合
+    QStringList fontA_16_file;
+    QStringList fontA_32_file;
+    QStringList fontA_56_file;
+    for(int i = 0;i < fontA_file.size();i ++)
+    {
+       QFileInfo fi = QFileInfo(fontA_file[i]);
+       QString fi_name = fi.fileName();
+       QRegExp regExp1("1616[\\w\\W]*.bin");
+       QRegExp regExp2("3232[\\w\\W]*.bin");
+       QRegExp regExp3("5656[\\w\\W]*.bin");
+        if(regExp1.indexIn(fi_name) != -1)
+            fontA_16_file<<fontA_file[i];
+        if(regExp2.indexIn(fi_name) != -1)
+            fontA_32_file<<fontA_file[i];
+        if(regExp3.indexIn(fi_name) != -1)
+            fontA_56_file<<fontA_file[i];
+    }
+    bin_write(out,fontA_16_file,progressBar,AFONT_16_SIZE,AFONT_16_ADD,cur_index);
+    bin_write(out,fontA_32_file,progressBar,AFONT_32_SIZE,AFONT_32_ADD,cur_index);
+    bin_write(out,fontA_56_file,progressBar,AFONT_56_SIZE,AFONT_56_ADD,cur_index);
 
     fuse_log_file.close();
     fuse_file.close();

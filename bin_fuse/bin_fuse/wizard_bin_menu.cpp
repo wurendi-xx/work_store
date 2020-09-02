@@ -105,7 +105,7 @@ bool Wizard_bin_menu::validateCurrentPage()
 bool Wizard_bin_menu::bin_maker()
 {
 
-    QString file_path = "menu.bin";
+    QString file_path = "menu" + QString::number((field("menu_id").toInt()),10) + ".bin";
     QFile file(file_path);
     if(file.exists())
     {
@@ -249,7 +249,7 @@ bool Wizard_bin_menu::bin_maker()
         else
             out.writeRawData(blank0,4);
         tmp.clear();
-        tmpInt = field("run_power"+QString::number(i)).toInt()+1;
+        tmpInt = field("run_power"+QString::number(i)).toInt();
         if(tmpInt != 0)
             out.writeRawData((const char *)&tmpInt,4);
         else
