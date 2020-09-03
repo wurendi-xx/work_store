@@ -89,7 +89,6 @@ Wizard_bin_menu::Wizard_bin_menu(QWidget *parent):
  */
 bool Wizard_bin_menu::validateCurrentPage()
 {
-
     if(-1 == this->currentPage()->nextId())
     {
         return bin_maker();

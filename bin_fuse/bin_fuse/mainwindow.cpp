@@ -65,7 +65,7 @@ void MainWindow::on_action_2_triggered()
 
 void MainWindow::on_action_triggered()
 {
-    QString str = "菜谱生成引导界面会在当前目录生成menu.bin文件\nbin文件融合会在当前目录生成bin_fues.bin文件和fuse_log.txt文件\n查看菜谱只能读取本文件生成的菜谱\n!!!目前菜谱制作的回退功能有bug，如果想回到上一个界面修改内容会导致当前数据无法保存到本地，所以请用重启代替回退";
+    QString str = "菜谱生成引导界面会在当前目录生成menu.bin文件\nbin文件融合会在当前目录生成bin_fues.bin文件和fuse_log.txt文件\n查看菜谱只能读取本文件生成的菜谱";
     QMessageBox::about(this,"教程",str);
 }
 

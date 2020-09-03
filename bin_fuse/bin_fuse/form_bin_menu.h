@@ -80,6 +80,8 @@ private:
     /** @brief 用于排版tabWidget界面*/
     QVBoxLayout* hLayout;
 
+    QTabWidget* tabWidget;
+
 };
 
 /**
@@ -96,6 +98,8 @@ public:
 private:
     /** @brief 用于排版tabWidget界面*/
     QVBoxLayout* hLayout;
+
+    QTabWidget* tabWidget;
 
 };
 

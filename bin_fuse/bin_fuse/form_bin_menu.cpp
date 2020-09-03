@@ -91,8 +91,35 @@ QWizardPage_main::QWizardPage_main()
 
 QWizardPage_ingredients::QWizardPage_ingredients()
 {
+    //不知道为何返回的数字少了1，暂时先加1
+    int count = 10;
 
+    //主料信息界面布局和控件生成
+    layout = new QFormLayout;
+    this->setLayout(layout);
 
+    QLabel* label_illustration = new QLabel;
+    label_illustration->setText("主料的描述限定10个字符,确保前面输入的主料数量和实际写的对应");
+    layout->addWidget(label_illustration);
+
+    //QVector<QLineEdit*> season_count(count);
+
+    //调料的详情和重量输入
+    QVector<QLineEdit*> ingredient_detail(count);
+    QVector<QLineEdit*> ingredient_weight(count);
+    for(int i = 0;i < count;i++)
+    {
+        ingredient_detail[i] = new QLineEdit;
+        QRegExp regExp2("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.]{0,10}");
+        ingredient_detail[i]->setValidator(new QRegExpValidator(regExp2,this));
+        ingredient_weight[i] = new QLineEdit;
+        QRegExp regExp3("[0-9]{0,9}");
+        ingredient_weight[i]->setValidator(new QRegExpValidator(regExp3,this));
+        layout->addRow("主料描述"+QString::number(i+1),ingredient_detail[i]);
+        layout->addRow("重量描述"+QString::number(i+1),ingredient_weight[i]);
+        registerField("ingredient_detail"+QString::number(i),ingredient_detail[i]);
+        registerField("ingredient_weight"+QString::number(i),ingredient_weight[i]);
+    }
 }
 
 /**
@@ -101,6 +128,19 @@ QWizardPage_ingredients::QWizardPage_ingredients()
  */
 void QWizardPage_ingredients::initializePage()
 {
+/*
+    int count = field("ingredients").toInt() + 1;
+
+    for(int i = 0;i < count;i ++)
+    {
+        layout->setTabEnabled(i,true);
+    }
+    for(int i = count;i < 5;i ++)
+    {
+        layout->setTabEnabled(i,false);
+    }
+    */
+    /*
     //不知道为何返回的数字少了1，暂时先加1
     int count = field("ingredients").toInt()+1;
 
@@ -130,6 +170,7 @@ void QWizardPage_ingredients::initializePage()
         registerField("ingredient_detail"+QString::number(i),ingredient_detail[i]);
         registerField("ingredient_weight"+QString::number(i),ingredient_weight[i]);
     }
+    */
 }
 
 
@@ -139,7 +180,7 @@ void QWizardPage_ingredients::initializePage()
  * @note 用来清除在当前layout中生成的输入控件
  */
 void QWizardPage_ingredients::cleanupPage(){
-    QLayoutItem *child;
+ /*   QLayoutItem *child;
     while((child = layout->takeAt(0))!=0)
     {
           layout->removeWidget(child->widget());
@@ -148,7 +189,7 @@ void QWizardPage_ingredients::cleanupPage(){
 }
 
     delete layout;
-
+*/
 }
 
 
@@ -158,7 +199,64 @@ void QWizardPage_ingredients::cleanupPage(){
 
 QWizardPage_season::QWizardPage_season()
 {
+    //不知道为何返回的数字少了1，暂时先加1
+    int count = 5;
 
+    hLayout = new QVBoxLayout(this);
+
+    QLabel* label_illustration = new QLabel;
+    label_illustration->setText("调料的描述限定10个字符，调料步骤中调料个数没有检测，请确保对应");
+    hLayout->addWidget(label_illustration);
+
+    tabWidget = new QTabWidget;
+    hLayout->addWidget(tabWidget);
+
+    QVector<QWidget*> hWidget(count);
+    QVector<QFormLayout*> layout(count);
+    QVector<QComboBox*> season_count(count);
+
+    for(int i = 0;i < count;i++)
+    {
+        //新建界面
+        hWidget[i] = new QWidget;
+
+        //新建FormLayout布局
+        layout[i] = new QFormLayout;
+
+        //配料个数输入
+        QStringList textList;
+        //使用QComboBox制成下拉菜单
+        season_count[i] = new QComboBox;
+        for(int i = 0; i < 6 ;i++)
+            textList<<QString::number(i);
+        season_count[i]->addItems(textList);
+
+        //控件添加到布局
+        layout[i]->addRow("配料个数",season_count[i]);
+
+        //将输入控件注册到整个引导界面
+        registerField("season_count"+QString::number(i),season_count[i]);
+
+        //调料的详情和重量输入
+        QVector<QLineEdit*> season_detail(5);
+        QVector<QLineEdit*> season_weight(5);
+        for(int j = 0;j < 5;j++)
+        {
+            season_detail[j] = new QLineEdit;
+            QRegExp regExp2("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.]{0,10}");
+            season_detail[j]->setValidator(new QRegExpValidator(regExp2,this));
+            season_weight[j] = new QLineEdit;
+            QRegExp regExp3("[0-9]{0,9}");
+            season_weight[j]->setValidator(new QRegExpValidator(regExp3,this));
+            layout[i]->addRow("文字描述"+QString::number(j+1),season_detail[j]);
+            layout[i]->addRow("重量描述"+QString::number(j+1),season_weight[j]);
+            registerField("season_detail"+QString::number(i)+QString::number(j),season_detail[j]);
+            registerField("season_weight"+QString::number(i)+QString::number(j),season_weight[j]);
+        }
+
+        hWidget[i]->setLayout(layout[i]);
+        tabWidget->addTab(hWidget[i],QString::number(i+1));
+    }
 
 }
 
@@ -168,6 +266,16 @@ QWizardPage_season::QWizardPage_season()
  */
 void QWizardPage_season::initializePage()
 {
+    int count = field("season_steps").toInt() + 1;
+    for(int i = 0;i < count;i ++)
+    {
+        tabWidget->setTabEnabled(i,true);
+    }
+    for(int i = count;i < 5;i ++)
+    {
+        tabWidget->setTabEnabled(i,false);
+    }
+    /*
     //不知道为何返回的数字少了1，暂时先加1
     int count = field("season_steps").toInt()+1;
 
@@ -228,7 +336,7 @@ void QWizardPage_season::initializePage()
         tabWidget->addTab(hWidget[i],QString::number(i+1));
 
     }
-
+*/
 }
 
 
@@ -238,6 +346,7 @@ void QWizardPage_season::initializePage()
  * @note 用来清除在当前layout中生成的输入控件
  */
 void QWizardPage_season::cleanupPage(){
+    /*
     QLayoutItem *child;
     while((child = hLayout->takeAt(0))!=0)
     {
@@ -247,7 +356,7 @@ void QWizardPage_season::cleanupPage(){
 }
 
     delete hLayout;
-
+*/
 }
 
 //---------------------------------------------------------------------------------QWizardPage_state的实现
@@ -255,6 +364,107 @@ void QWizardPage_season::cleanupPage(){
 
 QWizardPage_state::QWizardPage_state()
 {
+    //这里返回的是comboBox的索引值，起始为0，所以需要+1
+    //int count = field("state_steps").toInt()+1;
+    int count = 36;
+
+    //水平布局实例化
+    hLayout = new QVBoxLayout(this);
+
+    //说明文字
+    QLabel* label_illustration = new QLabel;
+    label_illustration->setText("状态的描述限定20个字符");
+    hLayout->addWidget(label_illustration);
+
+    //tabWidget布局实例化
+    tabWidget = new QTabWidget;
+    hLayout->addWidget(tabWidget);
+
+    //批量布局和界面
+    QVector<QWidget*> hWidget(count);
+    QVector<QFormLayout*> layout(count);
+    //批量输入控件声明
+    QVector<QComboBox*> run_state(count);
+    QVector<QComboBox*> run_cover(count);
+    QVector<QComboBox*> run_stir(count);
+    QVector<QComboBox*> run_power(count);
+    QVector<QLineEdit*> run_time(count);
+    QVector<QLineEdit*> run_temperature(count);
+    QVector<QLineEdit*> run_detail(count);
+
+    //QVector<QLineEdit*> season_name(count);
+    //QVector<QLineEdit*> season_weight(count);
+    for(int i = 0;i < count;i++)
+    {
+        //新建界面
+        hWidget[i] = new QWidget;
+
+        //新建布局
+        layout[i] = new QFormLayout;
+
+        //运行状态
+        QStringList textList;
+        run_state[i] = new QComboBox;
+        textList.append({"备料过程0x00","锅盖控制过程0x01","加热过程0x02","加料过程0x03","清洗过程0x04","等待过程0x05","保温过程0x06","焖煮过程0x07"});
+        run_state[i]->addItems(textList);
+        textList.clear();
+
+        //锅盖状态
+        run_cover[i] = new QComboBox;
+        textList.append({"维持状态0x00","开盖0x01","关盖0x02"});
+        run_cover[i]->addItems(textList);
+        textList.clear();
+
+        //搅拌状态
+        run_stir[i] = new QComboBox;
+        textList.append({"不搅拌0x00","搅拌0x01"});
+        run_stir[i]->addItems(textList);
+        textList.clear();
+
+        //火力力度
+        run_power[i] = new QComboBox;
+        for(int i = 0; i < 11 ;i++)
+            textList<<QString::number(i);
+        run_power[i]->addItems(textList);
+
+        //运行时间
+        run_time[i] = new QLineEdit;
+        QRegExp regExp1("[0-9]{0,9}");
+        run_time[i]->setValidator(new QRegExpValidator(regExp1,this));
+
+        //运行温度
+        run_temperature[i] = new QLineEdit;
+        QRegExp regExp2("[0-9]{0,9}");
+        run_temperature[i]->setValidator(new QRegExpValidator(regExp2,this));
+
+        //文字描述
+        run_detail[i] = new QLineEdit;
+        QRegExp regExp3("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.]{0,20}");
+        run_detail[i]->setValidator(new QRegExpValidator(regExp3,this));
+
+        //输入控件添加到布局
+        layout[i]->addRow("运行状态",run_state[i]);
+        layout[i]->addRow("锅盖状态",run_cover[i]);
+        layout[i]->addRow("搅动状态",run_stir[i]);
+        layout[i]->addRow("火力功率(*200W)",run_power[i]);
+        layout[i]->addRow("运行时间（s）",run_time[i]);
+        layout[i]->addRow("运行温度(℃)",run_temperature[i]);
+        layout[i]->addRow("文字描述",run_detail[i]);
+        //输入控件注册到引导页
+        registerField("run_state"+QString::number(i),run_state[i]);
+        registerField("run_cover"+QString::number(i),run_cover[i]);
+        registerField("run_stir"+QString::number(i),run_stir[i]);
+        registerField("run_power"+QString::number(i),run_power[i]);
+        registerField("run_time"+QString::number(i),run_time[i]);
+        registerField("run_temperature"+QString::number(i),run_temperature[i]);
+        registerField("run_detail"+QString::number(i),run_detail[i]);
+
+        //局部布局添加到引导页布局
+        hWidget[i]->setLayout(layout[i]);
+        //输入控件添加到tabWidget布局
+        tabWidget->addTab(hWidget[i],QString::number(i+1));
+
+    }
 
 }
 
@@ -264,6 +474,18 @@ QWizardPage_state::QWizardPage_state()
  */
 void QWizardPage_state::initializePage()
 {
+
+    int count = field("state_steps").toInt() + 1;
+    for(int i = 0;i < count;i ++)
+    {
+        tabWidget->setTabEnabled(i,true);
+    }
+    for(int i = count;i < 36;i ++)
+    {
+        tabWidget->setTabEnabled(i,false);
+    }
+
+    /*
     //这里返回的是comboBox的索引值，起始为0，所以需要+1
     int count = field("state_steps").toInt()+1;
 
@@ -365,7 +587,7 @@ void QWizardPage_state::initializePage()
         tabWidget->addTab(hWidget[i],QString::number(i+1));
 
     }
-
+*/
 }
 
 
@@ -376,7 +598,8 @@ void QWizardPage_state::initializePage()
  * @note 用来清除在当前layout中生成的输入控件
  */
 void QWizardPage_state::cleanupPage(){
-    QLayoutItem *child;
+
+/*    QLayoutItem *child;
     while((child = hLayout->takeAt(0))!= 0)
     {
           hLayout->removeWidget(child->widget());
@@ -385,7 +608,7 @@ void QWizardPage_state::cleanupPage(){
     }
 
     delete hLayout;
-
+*/
 }
 
 //---------------------------------------------------------------------------------QTableView_menu的实现
@@ -402,7 +625,7 @@ QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
     setWindowFlags(Qt::Window);
     //保存按钮
     QPushButton* save_button = new QPushButton(this);
-    save_button->setText(tr("保存为一个new后缀的新文件"));
+    save_button->setText(tr("另存为一个new后缀的新文件"));
     connect(save_button,SIGNAL(clicked()),this,SLOT(save_menu()));
     //读取文件
     menu_read = new QFile(menu_path);
