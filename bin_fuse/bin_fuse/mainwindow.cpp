@@ -69,3 +69,10 @@ void MainWindow::on_action_triggered()
     QMessageBox::about(this,"教程",str);
 }
 
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    bluetooth* b = new bluetooth();
+
+    b->show();
+}

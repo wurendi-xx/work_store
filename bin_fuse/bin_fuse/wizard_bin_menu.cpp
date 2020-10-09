@@ -7,6 +7,10 @@
 
 #include "wizard_bin_menu.h"
 
+#define INGREDIENTS_COUNT 8
+#define SEASON_COUNT 8
+#define STATE_COUNT 36
+
 /**
  * @brief Wizard_bin_menu::Wizard_bin_menu 初始化引导界面，添加引导页（主要信息、调料信息、状态信息）
     @startuml 菜谱制作引导页
@@ -104,7 +108,7 @@ bool Wizard_bin_menu::validateCurrentPage()
 bool Wizard_bin_menu::bin_maker()
 {
 
-    QString file_path = "menu" + QString::number((field("menu_id").toInt()),10) + ".bin";
+    QString file_path = "menu\\menu" + QString::number((field("menu_id").toInt()),10) + ".bin";
     QFile file(file_path);
     if(file.exists())
     {
@@ -118,6 +122,8 @@ bool Wizard_bin_menu::bin_maker()
 
 
     QByteArray tmp;
+    int tmpInt;
+    QByteArray tmpStr;
     //空常量,用于配合地址计数器填充空白区域
     char blank0[4];
     memset(blank0,'\0',4*sizeof(char));
@@ -127,21 +133,30 @@ bool Wizard_bin_menu::bin_maker()
     memset(blank2,'\0',40*sizeof(char));
     char blank3[1];
     memset(blank3,'\0',sizeof(char));
-    int tmpInt;
+
 
     //开始写入数据
     //写入菜谱ID
+
     tmpInt = field("menu_id").toInt();
     out.writeRawData((const char*)&tmpInt,4);
-
     //写入菜谱名
     tmp.clear();
+    tmpStr.clear();
     tmp = field("menu_name").toByteArray();
-    out.writeRawData(toGBK(tmp),tmp.size());
-    for(int i = 0;i < 20-tmp.size();i++)
+    if(tmp != nullptr)
     {
-        out.writeRawData(blank3,1);
+        tmpStr = toGBK(tmp);
+        out.writeRawData(tmpStr,tmpStr.size());
+        for(int i = 0;i < 20 - tmpStr.size();i++)
+        {
+            out.writeRawData(blank3,1);
+        }
+
     }
+    else
+        out.writeRawData(blank1,20);
+
 
     //写入总时间
     tmpInt = field("total_time").toInt();
@@ -165,22 +180,32 @@ bool Wizard_bin_menu::bin_maker()
             out.writeRawData((const char *)&tmpInt,4);
         else
             out.writeRawData(blank0,4);
-        for(int j = 0;j < 5;j ++)
+        for(int j = 0;j < SEASON_COUNT;j ++)
         {
             tmp.clear();
+            tmpStr.clear();
             tmp = field("season_detail"+QString::number(i)+QString::number(j)).toByteArray();
             if(tmp != nullptr)
             {
-                out.writeRawData(toGBK(tmp),tmp.size());
-                for(int i = 0;i < 20-tmp.size();i++)
+                tmpStr = toGBK(tmp);
+                out.writeRawData(tmpStr,tmpStr.size());
+                for(int i = 0;i < 20 - tmpStr.size();i++)
                 {
                     out.writeRawData(blank3,1);
                 }
             }
             else
                 out.writeRawData(blank1,20);
+
             tmp.clear();
             tmpInt = field("season_weight"+QString::number(i)+QString::number(j)).toInt();
+            if(tmpInt != 0)
+                out.writeRawData((const char *)&tmpInt,4);
+            else
+                out.writeRawData(blank0,4);
+
+            tmp.clear();
+            tmpInt = field("season_unit"+QString::number(i)+QString::number(j)).toInt();
             if(tmpInt != 0)
                 out.writeRawData((const char *)&tmpInt,4);
             else
@@ -197,23 +222,40 @@ bool Wizard_bin_menu::bin_maker()
     else
         out.writeRawData(blank0,4);
     //写入主料信息
-    for(int i = 0;i < 10;i++)
+    for(int i = 0;i < INGREDIENTS_COUNT;i++)
     {
 
         tmp.clear();
+        tmpStr.clear();
         tmp = field("ingredient_detail"+QString::number(i)).toByteArray();
         if(tmp != nullptr)
         {
-            out.writeRawData(toGBK(tmp),tmp.size());
-            for(int i = 0;i < 20-tmp.size();i++)
+            tmpStr = toGBK(tmp);
+            out.writeRawData(tmpStr,tmpStr.size());
+            for(int i = 0;i < 20 - tmpStr.size();i++)
             {
                 out.writeRawData(blank3,1);
             }
         }
         else
             out.writeRawData(blank1,20);
+
         tmp.clear();
         tmpInt = field("ingredient_weight"+QString::number(i)).toInt();
+        if(tmpInt != 0)
+            out.writeRawData((const char *)&tmpInt,4);
+        else
+            out.writeRawData(blank0,4);
+
+        tmp.clear();
+        tmpInt = field("ingredient_unit"+QString::number(i)).toInt();
+        if(tmpInt != 0)
+            out.writeRawData((const char *)&tmpInt,4);
+        else
+            out.writeRawData(blank0,4);
+
+        tmp.clear();
+        tmpInt = field("ingredient_category"+QString::number(i)).toInt();
         if(tmpInt != 0)
             out.writeRawData((const char *)&tmpInt,4);
         else
@@ -266,11 +308,13 @@ bool Wizard_bin_menu::bin_maker()
         else
             out.writeRawData(blank0,4);
         tmp.clear();
+        tmpStr.clear();
         tmp = field("run_detail"+QString::number(i)).toByteArray();
         if(tmp != nullptr)
         {
-            out.writeRawData(toGBK(tmp),tmp.size());
-            for(int i = 0;i < 40 - tmp.size();i++)
+            tmpStr = toGBK(tmp);
+            out.writeRawData(tmpStr,tmpStr.size());
+            for(int i = 0;i < 40 - tmpStr.size();i++)
             {
                 out.writeRawData(blank3,1);
             }
@@ -281,6 +325,25 @@ bool Wizard_bin_menu::bin_maker()
     }
 
     file.close();
+
+    file.open(QIODevice::ReadWrite);
+
+    QByteArray totalData = file.readAll();
+
+    uint32_t sumCheck = 0;
+
+    std::for_each(totalData.begin(),totalData.end(),[&sumCheck](auto a){sumCheck += a;});
+
+//    foreach (uint8_t tmp, totalData) {
+//        sumCheck += tmp;
+
+//    }
+
+    out.writeRawData((const char *)&sumCheck,4);
+
+    file.close();
+
+
     return true;
 }
 

@@ -9,6 +9,7 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QGridLayout>
 #include <QDebug>
 #include <QMessageBox>
 #include <QLabel>
@@ -21,7 +22,14 @@
 #include <QPushButton>
 #include <cstring>
 #include <QFileInfo>
-
+#include <QMenu>
+#include <QMenuBar>
+#include <QAxObject>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QDate>
 /**
  * @brief The form_bin_menu class 菜谱制作页的预留类
  */
@@ -61,7 +69,14 @@ public:
 
 private:
     /** @brief 用于排版formlayout界面*/
-    QFormLayout* layout;
+//    QFormLayout* layout;
+
+    QVBoxLayout* vLayout;
+
+    QTabWidget* tabWidget;
+
+//    QVector<QLineEdit*> ingredient_detail;
+//    QVector<QLineEdit*> ingredient_weight;
 
 };
 
@@ -117,20 +132,42 @@ public:
     QString toUTF(QByteArray input);
     QByteArray toGBK(QString input);
 
+    //将数据保存为excel
+    bool save(QString filePath,QStringList headers,QList<QStringList> data,QString comment="");
+    //将QTableView保存为excel
+    bool saveFromTable(QString filePath,QTableView *tableView,QString comment="");
+    bool insert(QSqlQuery& query, QString sheetName, QStringList slist);
+
 public slots:
+    /**
+     * @brief save_menu 另存为菜谱bin文件
+     */
     void save_menu();
+    /**
+     * @brief export_menu 导出excel文件
+     */
+    void export_menu();
 
 private:
     typedef struct
     {
         uint8_t Name[20];
         uint32_t Weight;
+        uint32_t WeightUnit;
     }SeasoningInformation_t;
 
     typedef struct
     {
+        uint8_t Name[20];
+        uint32_t Weight;
+        uint32_t WeightUnit;
+        uint32_t Category;
+    }MainSeasoningInformation_t;
+
+    typedef struct
+    {
         uint32_t SeasoningNum;
-        SeasoningInformation_t SeasoningInf[5];
+        SeasoningInformation_t SeasoningInf[8];
     }Seasoning_t;
 
     typedef struct
@@ -153,7 +190,7 @@ private:
         uint32_t                RunStepNum;
         Seasoning_t             Seasoning[5];
         uint32_t                MainSeasoningNum;
-        SeasoningInformation_t  MainSeasoning[10];
+        MainSeasoningInformation_t  MainSeasoning[8];
         Running_Step_t			RunStep[36];
     }Menu1_t;
 

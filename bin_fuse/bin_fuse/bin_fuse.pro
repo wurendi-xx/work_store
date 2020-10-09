@@ -5,6 +5,9 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT      += serialport
+QT       += axcontainer
+QT       +=sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -29,7 +32,8 @@ SOURCES += \
     form_bin_fuse.cpp \
     wizard_bin_fuse.cpp \
     wizard_bin_menu.cpp \
-    form_bin_menu.cpp
+    form_bin_menu.cpp \
+    bluetooth.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -37,11 +41,13 @@ HEADERS += \
     wizard_bin_fuse.h \
     wizard_bin_menu.h \
     parameter.h \
-    form_bin_menu.h
+    form_bin_menu.h \
+    bluetooth.h
 
 FORMS += \
         mainwindow.ui \
-    form_bin_fuse.ui
+    form_bin_fuse.ui \
+    bluetooth.ui
 
 STATECHARTS += \
     ../../journey of qt/lesson-5/StandardDialogs/test.scxml

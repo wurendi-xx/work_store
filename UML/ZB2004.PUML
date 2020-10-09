@@ -1,0 +1,36 @@
+@startuml 红外感应灰尘
+start 
+: DAC输出;
+if (是否有输入) then (是)
+: 给定输入校准的输出;
+repeat
+    : 1s内脉冲累计计数;
+    : 更新电机功率;
+    repeat while(持续接受输入)
+else (否)
+:灰尘传感器故障;
+endif
+stop
+@enduml
+
+@startuml 自动模式流程
+start
+:使能;
+
+repeat
+
+if(是否为自动模式) then(是)
+:根据灰尘传感器调节功率;
+else(否)
+:固定功率运行;
+endif
+
+repeat while(FG反馈是否异常) is(否)
+
+stop
+
+@enduml
+
+@startuml 电池包通讯
+
+@enduml

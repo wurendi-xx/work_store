@@ -12,6 +12,7 @@
 #include <QHBoxLayout>
 #include <QFile>
 #include <QTextCodec>
+#include <cstring>
 
 /**
  * @brief The Wizard_bin_menu class 菜谱制作引导功能实现

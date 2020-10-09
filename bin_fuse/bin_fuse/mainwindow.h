@@ -5,6 +5,7 @@
 #include "wizard_bin_fuse.h"
 #include "wizard_bin_menu.h"
 #include "form_bin_menu.h"
+#include "bluetooth.h"
 
 
 namespace Ui {
@@ -41,6 +42,8 @@ private slots:
     void on_action_triggered();
 
     void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -17,6 +17,13 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="0">
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>查看菜谱</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QPushButton" name="pushButton_menu_generate">
         <property name="text">
@@ -31,10 +38,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="pushButton">
+      <item row="3" column="0">
+       <widget class="QPushButton" name="pushButton_2">
         <property name="text">
-         <string>查看菜谱</string>
+         <string>上传菜谱</string>
         </property>
        </widget>
       </item>

@@ -13,15 +13,15 @@
 //bin文件结束地址
 #define MENU_ADD 300
 #define PIC_8K_ADD 1100
-#define PIC_28K_ADD 2500
-#define PIC_60K_ADD 3700
-#define PIC_120K_ADD 5120
-#define FONT_16_ADD 6020
-#define FONT_32_ADD 9620
-#define FONT_56_ADD 13020
-#define AFONT_16_ADD 13032
-#define AFONT_32_ADD 13080
-#define AFONT_56_ADD 14020
+#define PIC_28K_ADD 3900
+#define PIC_60K_ADD 6900
+#define PIC_120K_ADD 8340
+#define FONT_16_ADD 9240
+#define FONT_32_ADD 12840
+#define FONT_56_ADD 16240
+#define AFONT_16_ADD 16252
+#define AFONT_32_ADD 16300
+#define AFONT_56_ADD 16340
 //bin文件大小
 #define MENU_SIZE 4
 #define PIC_8K_SIZE 8
