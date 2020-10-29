@@ -243,9 +243,9 @@ bool Wizard_bin_fuse::bin_fuse()
     {
        QFileInfo fi = QFileInfo(font_file[i]);
        QString fi_name = fi.fileName();
-       QRegExp regExp1("1616[\\w\\W]*.bin");
-       QRegExp regExp2("3232[\\w\\W]*.bin");
-       QRegExp regExp3("5656[\\w\\W]*.bin");
+       QRegExp regExp1("16x16[\\w\\W]*.bin");
+       QRegExp regExp2("(20|24|32)x(20|24|32)[\\w\\W]*.bin");
+       QRegExp regExp3("56x56[\\w\\W]*.bin");
         if(regExp1.indexIn(fi_name) != -1)
             font_16_file<<font_file[i];
         if(regExp2.indexIn(fi_name) != -1)
@@ -267,9 +267,9 @@ bool Wizard_bin_fuse::bin_fuse()
     {
        QFileInfo fi = QFileInfo(fontA_file[i]);
        QString fi_name = fi.fileName();
-       QRegExp regExp1("1616[\\w\\W]*.bin");
-       QRegExp regExp2("3232[\\w\\W]*.bin");
-       QRegExp regExp3("5656[\\w\\W]*.bin");
+       QRegExp regExp1("16x16[\\w\\W]*.bin");
+       QRegExp regExp2("(20|24|32)x(20|24|32)[\\w\\W]*.bin");
+       QRegExp regExp3("56x56[\\w\\W]*.bin");
         if(regExp1.indexIn(fi_name) != -1)
             fontA_16_file<<fontA_file[i];
         if(regExp2.indexIn(fi_name) != -1)

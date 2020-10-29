@@ -65,7 +65,7 @@ void MainWindow::on_action_2_triggered()
 
 void MainWindow::on_action_triggered()
 {
-    QString str = "菜谱生成引导界面会在当前目录生成menu.bin文件\nbin文件融合会在当前目录生成bin_fues.bin文件和fuse_log.txt文件\n查看菜谱只能读取本文件生成的菜谱";
+    QString str = "bin文件融合：在当前目录生成bin_fues.bin文件和fuse_log.txt文件\n菜谱制作：在当前目录生成menu+时间戳+菜名+ID.bin文件\n查看菜谱：读取本地生成的菜谱和稍微修改\n上传菜谱：需要蓝牙模块支持，不推荐使用";
     QMessageBox::about(this,"教程",str);
 }
 

@@ -119,6 +119,25 @@ private:
 };
 
 /**
+ * @brief The QWizardPage_state class 菜谱制作第四页状态信息的引导页界面
+ */
+class QWizardPage_tooltips : public QWizardPage
+{
+public:
+    QWizardPage_tooltips();
+    void initializePage();
+    void cleanupPage();
+
+
+private:
+    /** @brief 用于排版tabWidget界面*/
+    QVBoxLayout* hLayout;
+
+    QTabWidget* tabWidget;
+
+};
+
+/**
  * @brief The QTableView_menu class 查看菜谱并显示
  */
 class QTableView_menu : public QTableView //继承至QTableView
@@ -200,7 +219,14 @@ private:
 
   QFile* menu_read;
 
+  /**
+   * @brief tmp读取bin文件的缓存数据
+   */
   QByteArray tmp;
+
+  uint32_t initMainSeasoningCount;
+  uint32_t initSeasoningCount;
+  uint32_t initRunningCount;
 
 };
 

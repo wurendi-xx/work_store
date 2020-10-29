@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>tineco.ico</file>
+        <file>tineco.png</file>
+        <file>添可.png</file>
+    </qresource>
+</RCC>

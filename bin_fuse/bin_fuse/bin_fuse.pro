@@ -51,3 +51,6 @@ FORMS += \
 
 STATECHARTS += \
     ../../journey of qt/lesson-5/StandardDialogs/test.scxml
+
+RESOURCES += \
+    tineco_logo.qrc

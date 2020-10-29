@@ -71,9 +71,17 @@ Wizard_bin_menu::Wizard_bin_menu(QWidget *parent):
 {
     //三个引导界面，分别用来填写主要，调料和状态信息
     page_main->setTitle("主要信息");
-    page_ingredients->setTitle("主料信息");
-    page_season->setTitle("调料信息");
-    page_state->setTitle("状态信息");
+    page_ingredients->setTitle("食材信息");
+    page_season->setTitle("调料盒信息");
+    page_state->setTitle("运行状态信息");
+
+
+
+    setWizardStyle(QWizard::ModernStyle);
+    setMinimumWidth(600);
+
+    setPixmap(QWizard::LogoPixmap,QPixmap(":/添可.png"));
+    setPixmap(QWizard::BackgroundPixmap,QPixmap(":/tineco.png"));
 
 
     //引导界面添加
@@ -82,6 +90,9 @@ Wizard_bin_menu::Wizard_bin_menu(QWidget *parent):
     setPage(Wizard_bin_menu::Page_Third,page_season);
     setPage(Wizard_bin_menu::Page_Fourth,page_state);
     setWindowTitle("菜谱制作");
+
+
+
 
     //setWizardStyle(QWizard::MacStyle);
 
@@ -108,7 +119,7 @@ bool Wizard_bin_menu::validateCurrentPage()
 bool Wizard_bin_menu::bin_maker()
 {
 
-    QString file_path = "menu\\menu" + QString::number((field("menu_id").toInt()),10) + ".bin";
+    QString file_path = "menu\\menu" +QDate::currentDate().toString("yyyy-MM-dd")+field("menu_name").toString()+QString::number((field("menu_id").toInt()),10) + ".bin";
     QFile file(file_path);
     if(file.exists())
     {
@@ -158,9 +169,22 @@ bool Wizard_bin_menu::bin_maker()
         out.writeRawData(blank1,20);
 
 
+    //计算总时间，除等待和保温状态之外
+    uint32_t sumTime = 0;
+    for(int i = 0;i < 36;i ++)
+    {
+        int tmpInt = 0;
+        tmpInt = field("run_state"+QString::number(i)).toInt();
+
+        if(tmpInt != 5 && tmpInt != 6)
+        {
+            sumTime += field("run_time"+QString::number(i)).toInt();
+        }
+    }
+
     //写入总时间
     tmpInt = field("total_time").toInt();
-    out.writeRawData((const char *)&tmpInt,4);
+    out.writeRawData((const char *)&sumTime,4);
 
     //写入调料步骤数
     tmpInt = field("season_steps").toInt()+1;

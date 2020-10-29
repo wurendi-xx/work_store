@@ -7,9 +7,10 @@
  */
 #include "form_bin_menu.h"
 
-#define INGREDIENTS_COUNT 8
+#define INGREDIENTS_COUNT 24
 #define SEASON_COUNT 8
 #define STATE_COUNT 36
+#define TOOL_TIPS 10
 
 
 form_bin_menu::form_bin_menu()
@@ -28,6 +29,14 @@ QWizardPage_main::QWizardPage_main()
     QFormLayout* layout = new QFormLayout;
     this->setLayout(layout);
 
+    QLabel* label_illustration = new QLabel;
+    label_illustration->setText("目前菜谱ID随意填写，会影响生成的bin文件名\n总时间不需要填写(会自动计算)\n步骤数会影响后续步骤的可编辑上限");
+    layout->addWidget(label_illustration);
+
+//    label_illustration->setPixmap(QPixmap(":/tineco.png"));
+
+//    layout->addWidget(label_illustration);
+
 
     //菜谱ID
     QLineEdit* menu_id = new QLineEdit;
@@ -40,7 +49,7 @@ QWizardPage_main::QWizardPage_main()
     QLineEdit* name = new QLineEdit;
 
     //正则仅仅匹配汉字、数字、字母、下划线(限定9个）
-    QRegExp regExp1("[\u4e00-\u9fa5_a-zA-Z0-9]{1,9}");
+    QRegExp regExp1("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.（）()]{1,9}");
     name->setValidator(new QRegExpValidator(regExp1,this));
 
     //总时间
@@ -49,6 +58,8 @@ QWizardPage_main::QWizardPage_main()
     //正则仅仅匹配数字
     //QRegExp regExp2("[0-9]{0,9}");
     total_time->setValidator(new QRegExpValidator(regExp2,this));
+    //total_time->setReadOnly(true);
+    total_time->setHidden(true);
 
     //主料种类个数
     QStringList textList;
@@ -71,14 +82,21 @@ QWizardPage_main::QWizardPage_main()
         textList<<QString::number(i);
     state_step->addItems(textList);
 
+    //状态步骤
+    QComboBox* stirReset_state = new QComboBox;
+    textList.clear();
+    textList<<"关闭(豆腐类需要关闭该功能)"<<"开启";
+    stirReset_state->addItems(textList);
+
+
     //添加到布局
     layout->addRow("菜谱ID",menu_id);
     layout->addRow("菜谱名字",name);
     layout->addRow("运行总时间",total_time);
-    layout->addRow("主料种类",ingredients);
-    layout->addRow("调料步骤",season_step);
-    layout->addRow("状态步骤",state_step);
-
+    layout->addRow("食材个数",ingredients);
+    layout->addRow("调料盒使用数",season_step);
+    layout->addRow("运行步骤",state_step);
+    layout->addRow("搅拌铲复位功能",stirReset_state);
     /*
     QObject::connect(name,&QLineEdit::editingFinished,[=](){menu_name = name->text();});
     QObject::connect(total_time,&QLineEdit::editingFinished,this,[=](){menu_total_time = total_time->text().toInt();});
@@ -88,10 +106,11 @@ QWizardPage_main::QWizardPage_main()
 
     registerField("menu_id*",menu_id);
     registerField("menu_name*",name);
-    registerField("total_time*",total_time);
+    registerField("total_time",total_time);
     registerField("ingredients",ingredients);
     registerField("season_steps",season_step);
     registerField("state_steps",state_step);
+    registerField("stirReset_state",stirReset_state);
 }
 
 //---------------------------------------------------------------------------------QWizardPage_Ingredients的实现
@@ -103,7 +122,7 @@ QWizardPage_ingredients::QWizardPage_ingredients()
     vLayout = new QVBoxLayout(this);
 
     QLabel* label_illustration = new QLabel;
-    label_illustration->setText("主料的描述限定9个字符,确保前面输入的主料数量和实际写的对应");
+    label_illustration->setText("主料的描述限定9个字符,确保前面输入的主料数量和实际写的对应\n重量值可以保留小数点1位，输入值需要再乘以10。\n比如0.5克用5表示，1克用10表示");
     vLayout->addWidget(label_illustration);
 
     tabWidget = new QTabWidget;
@@ -126,7 +145,7 @@ QWizardPage_ingredients::QWizardPage_ingredients()
 
         //食材名字输入
         ingredient_detail[i] = new QLineEdit;
-        QRegExp regExp2("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.]{0,9}");
+        QRegExp regExp2("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.（）()]{0,9}");
         ingredient_detail[i]->setValidator(new QRegExpValidator(regExp2,this));
         //食材重量输入
         ingredient_weight[i] = new QLineEdit;
@@ -140,11 +159,11 @@ QWizardPage_ingredients::QWizardPage_ingredients()
         //食材类别输入
         textList.clear();
         ingredient_category[i] = new QComboBox;
-        textList.append({"主料","辅料"});
+        textList.append({"主料","辅料","小料"});
         ingredient_category[i]->addItems(textList);
 
         layout[i]->addRow("食材描述"+QString::number(i+1),ingredient_detail[i]);
-        layout[i]->addRow("食材重量"+QString::number(i+1),ingredient_weight[i]);
+        layout[i]->addRow("食材重量（*10）"+QString::number(i+1),ingredient_weight[i]);
         layout[i]->addRow("重量单位"+QString::number(i+1),ingredient_unit[i]);
         layout[i]->addRow("食材类别"+QString::number(i+1),ingredient_category[i]);
         //注册输入控件
@@ -210,7 +229,7 @@ QWizardPage_season::QWizardPage_season()
     hLayout = new QVBoxLayout(this);
 
     QLabel* label_illustration = new QLabel;
-    label_illustration->setText("调料的描述限定10个字符，调料步骤中调料个数没有检测，请确保对应\n如果回退在第一个引导界面减少了步骤请先将多余步骤手动清空");
+    label_illustration->setText("调料的描述限定9个字符，调料步骤中调料个数没有检测，请确保对应\n如果回退在第一个引导界面减少了步骤请先将多余步骤手动清空\n重量值可以保留小数点1位，输入值需要再乘以10。\n比如0.5克用5表示，1克用10表示");
     hLayout->addWidget(label_illustration);
 
     tabWidget = new QTabWidget;
@@ -259,7 +278,7 @@ QWizardPage_season::QWizardPage_season()
         gridLayout[i]->addWidget(tmp1,0,0);
         QLabel* tmp2 = new QLabel("描述");
         gridLayout[i]->addWidget(tmp2,0,1);
-        QLabel* tmp3 = new QLabel("重量");
+        QLabel* tmp3 = new QLabel("重量(*10)");
         gridLayout[i]->addWidget(tmp3,0,2);
         QLabel* tmp4 = new QLabel("单位");
         gridLayout[i]->addWidget(tmp4,0,3);
@@ -414,14 +433,14 @@ QWizardPage_state::QWizardPage_state()
 {
     //这里返回的是comboBox的索引值，起始为0，所以需要+1
     //int count = field("state_steps").toInt()+1;
-    int count = 36;
+    int count = STATE_COUNT;
 
     //水平布局实例化
     hLayout = new QVBoxLayout(this);
 
     //说明文字
     QLabel* label_illustration = new QLabel;
-    label_illustration->setText("状态的描述限定20个字符\n如果回退在第一个引导界面减少了步骤请先将多余步骤手动清空");
+    label_illustration->setText("状态的描述限定19个字符\n如果回退在第一个引导界面减少了步骤请先将多余步骤手动清空\n只有等待过程需要输入提示文字\n备料过程和清洗过程暂时不用\n开盖、关盖、加料时间一般写5秒\n开盖加料分为三个步骤：\n 1.锅盖控制过程-开盖\n 2.等待过程-维持\n 3.锅盖控制过程-关盖");
     hLayout->addWidget(label_illustration);
 
     //tabWidget布局实例化
@@ -438,7 +457,8 @@ QWizardPage_state::QWizardPage_state()
     QVector<QComboBox*> run_power(count);
     QVector<QLineEdit*> run_time(count);
     QVector<QLineEdit*> run_temperature(count);
-    QVector<QLineEdit*> run_detail(count);
+    //QVector<QLineEdit*> run_detail(count);
+    QVector<QComboBox*> run_detail(count);
 
     //QVector<QLineEdit*> season_name(count);
     //QVector<QLineEdit*> season_weight(count);
@@ -453,7 +473,7 @@ QWizardPage_state::QWizardPage_state()
         //运行状态
         QStringList textList;
         run_state[i] = new QComboBox;
-        textList.append({"备料过程0x00","锅盖控制过程0x01","加热过程0x02","加料过程0x03","清洗过程0x04","等待过程0x05","保温过程0x06","焖煮过程0x07"});
+        textList.append({"备料过程0x00","锅盖控制过程0x01","加热过程0x02","加料过程0x03","清洗过程0x04","等待过程0x05","保温（结束）过程0x06","焖煮过程0x07"});
         run_state[i]->addItems(textList);
         textList.clear();
 
@@ -474,6 +494,7 @@ QWizardPage_state::QWizardPage_state()
         for(int i = 0; i < 11 ;i++)
             textList<<QString::number(i);
         run_power[i]->addItems(textList);
+        textList.clear();
 
         //运行时间
         run_time[i] = new QLineEdit;
@@ -486,18 +507,21 @@ QWizardPage_state::QWizardPage_state()
         run_temperature[i]->setValidator(new QRegExpValidator(regExp2,this));
 
         //文字描述
-        run_detail[i] = new QLineEdit;
-        QRegExp regExp3("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.]{0,19}");
-        run_detail[i]->setValidator(new QRegExpValidator(regExp3,this));
+        run_detail[i] = new QComboBox;
+        textList<<"不使用文字说明";
+        for(int i = 1; i < 11 ;i++)
+            textList<<QString::number(i);
+        //QRegExp regExp3("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.（）()]{0,19}");
+        run_detail[i]->addItems(textList);
 
         //输入控件添加到布局
         layout[i]->addRow("运行状态",run_state[i]);
         layout[i]->addRow("锅盖状态",run_cover[i]);
         layout[i]->addRow("搅动状态",run_stir[i]);
-        layout[i]->addRow("火力功率(*200W)",run_power[i]);
+        layout[i]->addRow("火力功率(x 200W)",run_power[i]);
         layout[i]->addRow("运行时间（s）",run_time[i]);
         layout[i]->addRow("运行温度(℃)",run_temperature[i]);
-        layout[i]->addRow("文字描述",run_detail[i]);
+        layout[i]->addRow("文字描述索引",run_detail[i]);
         //输入控件注册到引导页
         registerField("run_state"+QString::number(i),run_state[i]);
         registerField("run_cover"+QString::number(i),run_cover[i]);
@@ -528,7 +552,7 @@ void QWizardPage_state::initializePage()
     {
         tabWidget->setTabEnabled(i,true);
     }
-    for(int i = count;i < 36;i ++)
+    for(int i = count;i < STATE_COUNT;i ++)
     {
         tabWidget->setTabEnabled(i,false);
     }
@@ -659,6 +683,154 @@ void QWizardPage_state::cleanupPage(){
 */
 }
 
+
+//---------------------------------------------------------------------------------QWizardPage_tooltips的实现
+
+
+QWizardPage_tooltips::QWizardPage_tooltips()
+{
+    //这里返回的是comboBox的索引值，起始为0，所以需要+1
+    //int count = field("state_steps").toInt()+1;
+    int count = STATE_COUNT;
+
+    //水平布局实例化
+    hLayout = new QVBoxLayout(this);
+
+    //说明文字
+    QLabel* label_illustration = new QLabel;
+    label_illustration->setText("状态的描述限定19个字符\n如果回退在第一个引导界面减少了步骤请先将多余步骤手动清空");
+    hLayout->addWidget(label_illustration);
+
+    //tabWidget布局实例化
+    tabWidget = new QTabWidget;
+    hLayout->addWidget(tabWidget);
+
+    //批量布局和界面
+    QVector<QWidget*> hWidget(count);
+    QVector<QFormLayout*> layout(count);
+    //批量输入控件声明
+    QVector<QLineEdit*> tooltips(count);
+
+    for(int i = 0;i < count;i++)
+    {
+        //新建界面
+        hWidget[i] = new QWidget;
+
+        //新建布局
+        layout[i] = new QFormLayout;
+
+        //运行状态
+        QStringList textList;
+        run_state[i] = new QComboBox;
+        textList.append({"备料过程0x00","锅盖控制过程0x01","加热过程0x02","加料过程0x03","清洗过程0x04","等待过程0x05","保温（结束）过程0x06","焖煮过程0x07"});
+        run_state[i]->addItems(textList);
+        textList.clear();
+
+        //锅盖状态
+        run_cover[i] = new QComboBox;
+        textList.append({"维持状态0x00","开盖0x01","关盖0x02"});
+        run_cover[i]->addItems(textList);
+        textList.clear();
+
+        //搅拌状态
+        run_stir[i] = new QComboBox;
+        textList.append({"不搅拌0x00","搅拌速度中0x01","搅拌速度低0x02","搅拌速度快0x03"});
+        run_stir[i]->addItems(textList);
+        textList.clear();
+
+        //火力力度
+        run_power[i] = new QComboBox;
+        for(int i = 0; i < 11 ;i++)
+            textList<<QString::number(i);
+        run_power[i]->addItems(textList);
+        textList.clear();
+
+        //运行时间
+        run_time[i] = new QLineEdit;
+        QRegExp regExp1("[0-9]{0,9}");
+        run_time[i]->setValidator(new QRegExpValidator(regExp1,this));
+
+        //运行温度
+        run_temperature[i] = new QLineEdit;
+        QRegExp regExp2("[0-9]{0,9}");
+        run_temperature[i]->setValidator(new QRegExpValidator(regExp2,this));
+
+        //文字描述
+        run_detail[i] = new QComboBox;
+        textList<<"不使用文字说明";
+        for(int i = 1; i < 11 ;i++)
+            textList<<QString::number(i);
+        //QRegExp regExp3("[\u4e00-\u9fa5_a-zA-Z0-9，,:：。.（）()]{0,19}");
+        run_detail[i]->addItems(textList);
+
+        //输入控件添加到布局
+        layout[i]->addRow("运行状态",run_state[i]);
+        layout[i]->addRow("锅盖状态",run_cover[i]);
+        layout[i]->addRow("搅动状态",run_stir[i]);
+        layout[i]->addRow("火力功率(x 200W)",run_power[i]);
+        layout[i]->addRow("运行时间（s）",run_time[i]);
+        layout[i]->addRow("运行温度(℃)",run_temperature[i]);
+        layout[i]->addRow("文字描述索引",run_detail[i]);
+        //输入控件注册到引导页
+        registerField("run_state"+QString::number(i),run_state[i]);
+        registerField("run_cover"+QString::number(i),run_cover[i]);
+        registerField("run_stir"+QString::number(i),run_stir[i]);
+        registerField("run_power"+QString::number(i),run_power[i]);
+        registerField("run_time"+QString::number(i),run_time[i]);
+        registerField("run_temperature"+QString::number(i),run_temperature[i]);
+        registerField("run_detail"+QString::number(i),run_detail[i]);
+
+        //局部布局添加到引导页布局
+        hWidget[i]->setLayout(layout[i]);
+        //输入控件添加到tabWidget布局
+        tabWidget->addTab(hWidget[i],QString::number(i+1));
+
+    }
+
+}
+
+/**
+ * @brief QWizardPage_state::initializePage 状态引导页的刷新入口程序
+ * @note 调用主要信息页中的状态步骤来动态生成输入控件
+ */
+void QWizardPage_tooltips::initializePage()
+{
+
+    int count = field("state_steps").toInt() + 1;
+    for(int i = 0;i < count;i ++)
+    {
+        tabWidget->setTabEnabled(i,true);
+    }
+    for(int i = count;i < TOOL_TIPS;i ++)
+    {
+        tabWidget->setTabEnabled(i,false);
+    }
+
+
+}
+
+
+
+
+/**
+ * @brief QWizardPage_state::cleanupPage 状态引导页后退键触发的程序入口
+ * @note 用来清除在当前layout中生成的输入控件
+ */
+void QWizardPage_tooltips::cleanupPage(){
+
+/*    QLayoutItem *child;
+    while((child = hLayout->takeAt(0))!= 0)
+    {
+          hLayout->removeWidget(child->widget());
+          child->widget()->setParent(0);
+          delete child;
+    }
+
+    delete hLayout;
+*/
+}
+
+
 //---------------------------------------------------------------------------------QTableView_menu的实现
 
 /**
@@ -713,12 +885,17 @@ QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
 
     model->setItem(3, 0, new QStandardItem("主料个数"));
     model->setItem(3, 1, new QStandardItem(QString::number(Menu->MainSeasoningNum, 10)));
+    initMainSeasoningCount = Menu->MainSeasoningNum;
 
     model->setItem(4, 0, new QStandardItem("加料步骤"));
     model->setItem(4, 1, new QStandardItem(QString::number(Menu->SeasoningStepNum, 10)));
+    initSeasoningCount = Menu->SeasoningStepNum;
+
 
     model->setItem(5, 0, new QStandardItem("运行步骤"));
     model->setItem(5, 1, new QStandardItem(QString::number(Menu->RunStepNum, 10)));
+    initRunningCount = Menu->RunStepNum;
+
 
     int tableIndex = 5;
 
@@ -760,6 +937,8 @@ QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
         {
             case 0:state_display = "主料";break;
             case 1:state_display = "辅料";break;
+            case 2:state_display = "小料";break;
+            default:state_display = "错误数据";break;
         }
         model->setItem(tableIndex, 0, new QStandardItem("主料"+QString::number(j + 1,10)+"食材类别"));
         model->setItem(tableIndex, 1, new QStandardItem(QString::number(Menu->MainSeasoning[j].Category, 10)));
@@ -880,7 +1059,7 @@ QTableView_menu::QTableView_menu(QWidget *parent,QString file_path):
 
 /**
  * @brief QTableView_menu::toUTF 如果想进行字符编码转化，一定要确保输入的参数是原始数据，不能经过QString强制转化，因为在char*转为QString的过程中就已经实现了一次解码。
- * @param input
+ * @param input 原二进制数据
  * @return
  */
 QString QTableView_menu::toUTF(QByteArray input)
@@ -893,7 +1072,7 @@ QString QTableView_menu::toUTF(QByteArray input)
 
 /**
  * @brief Wizard_bin_menu::toGBK 将unicode转化为GBK
- * @param input
+ * @param input QString类型数据
  * @return
  */
 QByteArray QTableView_menu::toGBK(QString input)
@@ -1088,7 +1267,7 @@ void QTableView_menu::save_menu()
     Menu->RunStepNum = model->data(index).toUInt();
 
 
-    for(int j = 0;j < Menu->MainSeasoningNum;j ++)
+    for(int j = 0;j < initMainSeasoningCount;j ++)
     {
         tableIndex ++;
         index = model->index(tableIndex,1);
@@ -1109,7 +1288,7 @@ void QTableView_menu::save_menu()
     }
 
 
-    for(int i = 0 ;i < Menu->SeasoningStepNum ;i++)
+    for(int i = 0 ;i < initSeasoningCount ;i++)
     {
         tableIndex ++;
         index = model->index(tableIndex,1);
@@ -1132,7 +1311,7 @@ void QTableView_menu::save_menu()
     }
 
     QString state_display;
-    for(int i = 0;i < Menu->RunStepNum;i++)
+    for(int i = 0;i < initRunningCount;i++)
     {
         tableIndex ++;
         index = model->index(tableIndex,1);
@@ -1169,7 +1348,7 @@ void QTableView_menu::save_menu()
 
     //QByteArray tmp = (char*)Menu;
     QFileInfo inf = QFileInfo(menu_path);
-    QFile menu_save("menu\\" + inf.baseName()+"new.bin");
+    QFile menu_save("menu\\menu" +QDate::currentDate().toString("yyyy-MM-dd")+toUTF((char*)Menu->DishName)+QString::number(Menu->ID, 10)+"new.bin");
     menu_save.open(QIODevice::WriteOnly | QIODevice::Truncate);
     QDataStream out(&menu_save);
     int impsize = tmp.size();
@@ -1189,7 +1368,7 @@ void QTableView_menu::export_menu()
     //  Qt 4
     //  dlg.setDirectory(QDesktopServices::storageLocation(QDesktopServices::DesktopLocation));
     dlg.setNameFilter("*.xls");
-    filename=QDate::currentDate().toString("yyyy-MM-dd")+"menu.xls";
+    filename=QDate::currentDate().toString("yyyy-MM-dd")+toUTF((char*)Menu->DishName)+".xls";
     dlg.selectFile(filename);
     if(dlg.exec()!= QDialog::Accepted)
         return;
